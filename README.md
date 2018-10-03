@@ -1,6 +1,32 @@
-# camposter
+# CAMPOSTER
 
-A new Flutter project.
+We will make __CAMPOSTER__ using Flutter.
+
+
+
+## 🍌YUNHANKYU
+- Project Manager 
+- Designer
+- Contributor
+- Developer
+
+
+## 🍑KANGYECHAN
+- Designer
+- Contributor
+- Developer
+- Planner
+
+
+## 💋RYUYONGHWAN
+- Designer
+- Contributor
+- Developer
+## 👀CHOISUNWOONG
+- Designer
+- Contributor
+- Developer
+
 
 ## Getting Started
 
