@@ -46,17 +46,13 @@ class LoginPage extends StatelessWidget {
             width: 100.0,
             height: 100.0,
           ),
-          SizedBox(height: 300.0,),
+          SizedBox(height: 200.0,),
           Container(
             child: Column(
               children: <Widget>[
                 FlatButton(
                   child: Image.asset("images/google.png", fit: BoxFit.fill,),
                   onPressed: () =>_gSignIn().then((FirebaseUser user) => print(user)).catchError((e) => print(e)),
-                ),
-                FlatButton(
-                  child: Image.asset("images/kakao.png", fit: BoxFit.cover),
-                  onPressed: () {},
                 ),
               ],
             ),
