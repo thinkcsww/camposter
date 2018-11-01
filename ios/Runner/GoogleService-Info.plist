@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
+	<string>ca-app-pub-3940256099942544/2934735716</string>
+	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
+	<string>ca-app-pub-3940256099942544/4411468910</string>
+	<key>CLIENT_ID</key>
+	<string>458768375642-4g7qatked5j7i4h32euohjdslkk6tosn.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.458768375642-4g7qatked5j7i4h32euohjdslkk6tosn</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAjsgOlJODhlbT9rW_eNrDA_ZK0d_1eENM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>458768375642</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.camposter.camposter</string>
+	<key>PROJECT_ID</key>
+	<string>camposter-9d59c</string>
+	<key>STORAGE_BUCKET</key>
+	<string>camposter-9d59c.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<true></true>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<false></false>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:458768375642:ios:264d5dd473d32ce5</string>
+	<key>DATABASE_URL</key>
+	<string>https://camposter-9d59c.firebaseio.com</string>
+</dict>
+</plist>

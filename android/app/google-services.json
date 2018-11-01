@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "458768375642",
+    "firebase_url": "https://camposter-9d59c.firebaseio.com",
+    "project_id": "camposter-9d59c",
+    "storage_bucket": "camposter-9d59c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458768375642:android:264d5dd473d32ce5",
+        "android_client_info": {
+          "package_name": "com.camposter.camposter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "458768375642-3b6duh4jfvdckkjrl8756f3impce2ls8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.camposter.camposter",
+            "certificate_hash": "afab969e574207fc859fe028c4849b137b6e45e6"
+          }
+        },
+        {
+          "client_id": "458768375642-l9ihv50924lstu6kkuhirjchov5h15ir.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.camposter.camposter",
+            "certificate_hash": "f5083281f1ad4b33b4534241c894570d74fa76f2"
+          }
+        },
+        {
+          "client_id": "458768375642-oc32c7u74ilrfclbt4ovcb2csc331ag6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.camposter.camposter",
+            "certificate_hash": "8a5d5d863ea70aa9bcc2e75864ea29de1db89ce3"
+          }
+        },
+        {
+          "client_id": "458768375642-o6tv79nb2jnb60luf0h4f4b1pang2hqp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.camposter.camposter",
+            "certificate_hash": "6d1b3fda846625f5ee98887ccebb2e1a59eee57a"
+          }
+        },
+        {
+          "client_id": "458768375642-nnabf8gtkn497gv30nft0pbnhh9f36rn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYtj4NG01lSZwAGHHgFnZkOGp8a2eDxvU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "458768375642-nnabf8gtkn497gv30nft0pbnhh9f36rn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "458768375642-4g7qatked5j7i4h32euohjdslkk6tosn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.camposter.camposter"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
