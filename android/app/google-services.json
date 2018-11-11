@@ -15,35 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "458768375642-3b6duh4jfvdckkjrl8756f3impce2ls8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.camposter.camposter",
-            "certificate_hash": "afab969e574207fc859fe028c4849b137b6e45e6"
-          }
-        },
-        {
           "client_id": "458768375642-l9ihv50924lstu6kkuhirjchov5h15ir.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.camposter.camposter",
             "certificate_hash": "f5083281f1ad4b33b4534241c894570d74fa76f2"
-          }
-        },
-        {
-          "client_id": "458768375642-oc32c7u74ilrfclbt4ovcb2csc331ag6.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.camposter.camposter",
-            "certificate_hash": "8a5d5d863ea70aa9bcc2e75864ea29de1db89ce3"
-          }
-        },
-        {
-          "client_id": "458768375642-o6tv79nb2jnb60luf0h4f4b1pang2hqp.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.camposter.camposter",
-            "certificate_hash": "6d1b3fda846625f5ee98887ccebb2e1a59eee57a"
           }
         },
         {

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'chat.dart';
+import 'chat_list.dart';
 import 'like.dart';
 import 'mypage.dart';
 import 'calendar.dart';
 import 'home.dart';
-
 
 class NavigatorPage extends StatefulWidget {
   @override
@@ -12,7 +11,6 @@ class NavigatorPage extends StatefulWidget {
 }
 
 class _NavigatorPageState extends State<NavigatorPage> {
-
   int currentTab = 0;
   ChatPage chatPage;
   LikePage likePage;
@@ -54,16 +52,15 @@ class _NavigatorPageState extends State<NavigatorPage> {
         },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), title: Text("")),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), title: Text("")),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today), title: Text("")),
           BottomNavigationBarItem(icon: Icon(Icons.star), title: Text("")),
           BottomNavigationBarItem(icon: Icon(Icons.chat), title: Text("")),
-          BottomNavigationBarItem(icon: Icon(Icons.accessibility), title: Text("")),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.accessibility), title: Text("")),
         ],
         type: BottomNavigationBarType.fixed,
-
-      ) ,
+      ),
     );
   }
 }
-
-
