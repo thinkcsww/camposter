@@ -1,9 +1,12 @@
+import 'package:camposter/chat_room.dart';
+import 'package:camposter/model/chat_room_info.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'model/creator.dart';
+import 'model/poster.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class PosterCreatorListPage extends StatefulWidget {
   @override
@@ -12,11 +15,13 @@ class PosterCreatorListPage extends StatefulWidget {
 
 class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
   String userId;
+
   @override
   void initState() {
     super.initState();
     _getCurrentUserId(context);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,11 +38,15 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('Posters').where('auth', isEqualTo: true).snapshots(),
+      stream: Firestore.instance
+          .collection('Posters')
+          .where('auth', isEqualTo: true)
+//          .where('creatorId', isLessThan: userId)
+//          .where('creatorId', isEqualTo: userId)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) return Text('Error, please try again');
         if (!snapshot.hasData) return LinearProgressIndicator();
-
         return _buildList(context, snapshot.data.documents);
       },
     );
@@ -47,15 +56,15 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
     return ListView(
         padding: const EdgeInsets.symmetric(horizontal: 0.0),
         children:
-        snapshot.map((data) => _buildListItem(context, data)).toList());
+            snapshot.map((data) => _buildListItem(context, data)).toList());
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    final creator = Creator.fromSnapshot(data);
+    final poster = Poster.forCreatorList(data);
 
-    final targetUserId = creator.creatorId;
-
-    final circleName = data.documentID;
+    final targetUserId = poster.creatorId;
+    final imageURL = poster.imageURL;
+    final posterName = poster.posterName;
     return Padding(
       key: ValueKey(data.documentID),
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -63,24 +72,32 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
         title: Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: Text(
-            circleName,
+            posterName,
             style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
           ),
         ),
         leading: Image.network(
-          creator.imageURL,
+          poster.imageURL,
           width: 50.0,
           height: 50.0,
           fit: BoxFit.fill,
         ),
         onTap: () {
-          _showAlertDialog(context, circleName, targetUserId);
+          final roomId = '$userId$targetUserId';
+          final chatRoomInfo = ChatRoomInfo(
+              roomId: roomId,
+              imageURL: imageURL,
+              targetUserId: targetUserId,
+              posterName: posterName);
+          _showAlertDialog(context, chatRoomInfo)
+              .then((finish) => Navigator.pop(context));
         },
       ),
     );
   }
 
-  Future<Null> _showAlertDialog(BuildContext context, String circleName, String targetUserId) async {
+  Future<Null> _showAlertDialog(
+      BuildContext context, ChatRoomInfo chatRoomInfo) async {
     return showDialog(
         context: context,
         barrierDismissible: false,
@@ -95,13 +112,43 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
                   initializeDateFormatting('ko_KR');
                   var formatter = DateFormat('a h:mm', 'ko');
                   var formattedTime = formatter.format(now);
-                  Firestore.instance.collection('ChatRooms').document('${userId}${targetUserId}').setData({
-                    'circleName': circleName,
+                  Firestore.instance
+                      .collection('ChatRooms')
+                      .document(chatRoomInfo.roomId)
+                      .setData({
+                    chatRoomInfo.targetUserId: '0',
+                    userId: '0',
+                    'posterName': chatRoomInfo.posterName,
                     'recentMessage': '새로운 대화가 생성되었습니다.',
                     'recentMessageTime': formattedTime,
-                    'imageURL' : 'https://lh3.googleusercontent.com/proxy/SEwZekO1ysQi03SdMsOh2Ifc13Z45lUy9QamF4HHrnrlThWr0EG5IjTRCCDggA5lCcVE8CiLiVcqjtQd9V7nIq4SqFq_DRP44wulzlk7-8u7S2cur-jhjup7rHIKNNUFk3eeI2D2FWhvSKOg6BKWiZsrZiUgacc=w592-h404-n-k-no-v1'
+                    'imageURL': chatRoomInfo.imageURL,
+                    'roomId': chatRoomInfo.roomId,
+                  }).then((finish) {
+                    Firestore.instance
+                        .collection('Users')
+                        .document(userId)
+                        .collection('ChatList')
+                        .document('ChatList')
+                        .setData({chatRoomInfo.roomId: true}, merge: true).then(
+                            (finish) {
+                      Firestore.instance
+                          .collection('Users')
+                          .document(chatRoomInfo.targetUserId)
+                          .collection('ChatList')
+                          .document('ChatList')
+                          .setData({chatRoomInfo.roomId: true}, merge: true);
+
+                      Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ChatRoomPage(chatRoomInfo: chatRoomInfo)))
+                          .then((finish) {
+                        Fluttertoast.showToast(msg: '새로운 채팅 생성 완료');
+                        Navigator.pop(context);
+                      });
+                    });
                   });
-                  Navigator.pop(context);
                 },
               ),
               FlatButton(
@@ -120,7 +167,8 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
                         child: Container(
                             alignment: Alignment.center,
                             height: 30.0,
-                            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor),
                             child: Text(
                               '알림',
                               style: TextStyle(
@@ -133,8 +181,10 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
                   Row(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(22.0, 25.0, 8.0, 8.0),
-                        child: Text('${circleName}님과 채팅을 시작하겠습니까?'),
+                        padding:
+                            const EdgeInsets.fromLTRB(22.0, 25.0, 8.0, 8.0),
+                        child:
+                            Text('${chatRoomInfo.posterName}님과 채팅을 시작하겠습니까?'),
                       ),
                     ],
                   ),
@@ -148,7 +198,9 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
   void _getCurrentUserId(BuildContext context) {
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
       if (user != null) {
-        userId = user.uid;
+        setState(() {
+          userId = user.uid;
+        });
         print(userId);
       }
     });

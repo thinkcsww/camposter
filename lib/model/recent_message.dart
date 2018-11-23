@@ -6,17 +6,20 @@ class RecentMessage {
 
   final String recentMessage;
   final String recentMessageTime;
-  final String circleName;
+  final String posterName;
   final String imageURL;
+  final String roomId;
 
   RecentMessage.fromSnapshot(DocumentSnapshot snapshot)
       : assert(snapshot['recentMessage'] != null),
         assert(snapshot['recentMessageTime'] != null),
-        assert(snapshot['circleName'] != null),
+        assert(snapshot['posterName'] != null),
         assert(snapshot['imageURL'] != null),
+        assert(snapshot['roomId'] != null),
         recentMessage = snapshot['recentMessage'],
         recentMessageTime = snapshot['recentMessageTime'],
         imageURL = snapshot['imageURL'],
-        circleName = snapshot['circleName'];
+        posterName = snapshot['posterName'],
+        roomId = snapshot['roomId'];
 
 }

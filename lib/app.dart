@@ -5,6 +5,8 @@ import 'chat_room.dart';
 import 'colors.dart';
 import 'poster_creator_list.dart';
 import 'signup_info.dart';
+import 'mypage_poster_iposted.dart';
+import 'add_poster.dart';
 
 class CamposterApp extends StatelessWidget {
 
@@ -24,6 +26,8 @@ class CamposterApp extends StatelessWidget {
         '/chat_room': (context) => ChatRoomPage(),
         '/poster_creator_list': (context) => PosterCreatorListPage(),
         '/sign_up_info' : (context) => SignUpInfoPage(),
+        '/mypage_poster_iposted' : (context) => MyPagePosterIPostedPage(),
+        '/add_poster' : (context) => AddPosterPage(),
       },
     );
   }

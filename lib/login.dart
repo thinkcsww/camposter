@@ -13,6 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   double spinKitState = 0.0;
 
   Future<FirebaseUser> _gSignIn() async {
@@ -74,9 +75,9 @@ class _LoginPageState extends State<LoginPage> {
                         fit: BoxFit.fill,
                       ),
                       onPressed: () {
-                        showSpinKit();
+                        _showSpinKit();
                         _gSignIn().then((FirebaseUser user) {}).then((f) {
-                          hideSpinKit();
+                          _hideSpinKit();
                           Navigator.pushNamed(context, '/sign_up_info');
                         });
                       }
@@ -100,12 +101,12 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void showSpinKit() {
+  void _showSpinKit() {
     setState(() {
       spinKitState = 1.0;
     });
   }
-  void hideSpinKit() {
+  void _hideSpinKit() {
     setState(() {
       spinKitState = 0.0;
     });
