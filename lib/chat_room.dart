@@ -5,31 +5,35 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'model/chat_room_info.dart';
 
 class ChatRoomPage extends StatefulWidget {
-  final RecentMessage recentMessage;
+  final ChatRoomInfo chatRoomInfo;
 
-  ChatRoomPage({Key key, @required this.recentMessage}) : super(key: key);
+
+  ChatRoomPage({Key key, @required this.chatRoomInfo}) : super(key: key);
 
   @override
   _ChatRoomPageState createState() =>
-      _ChatRoomPageState(recentMessage: recentMessage);
+      _ChatRoomPageState(chatRoomInfo: chatRoomInfo);
 }
 
 class _ChatRoomPageState extends State<ChatRoomPage> {
-  final RecentMessage recentMessage;
+  final ChatRoomInfo chatRoomInfo;
   final TextEditingController _messageTextController = TextEditingController();
   ScrollController _messageListViewScrollController = ScrollController();
   bool _isComposing = false;
   String userId, userName;
   int _targetMessageNum;
 
-  _ChatRoomPageState({Key key, @required this.recentMessage});
+  _ChatRoomPageState({Key key, @required this.chatRoomInfo});
 
   @override
   void initState() {
     super.initState();
     _getCurrentUserId(context);
+    print(chatRoomInfo.targetUserId);
+    print(chatRoomInfo.posterName);
   }
 
   @override
@@ -46,7 +50,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               .primaryColor,
         ),
         title: Text(
-          recentMessage.circleName,
+          chatRoomInfo.posterName,
           textAlign: TextAlign.center,
           style: TextStyle(color: Theme
               .of(context)
@@ -103,9 +107,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   Future<DocumentSnapshot> getMessageNum() async {
     DocumentSnapshot snapshot = await Firestore.instance
         .collection('ChatRooms')
-        .document('CWJeX3cEF51N319OIRy9')
+        .document(chatRoomInfo.roomId)
         .get();
-    var data = snapshot['messageNum'];
+    var data = snapshot[userId];
     print(data);
   }
 
@@ -113,7 +117,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
           .collection('ChatRooms')
-          .document('CWJeX3cEF51N319OIRy9')
+          .document(chatRoomInfo.roomId)
           .collection('Message')
           .snapshots(),
 
@@ -129,18 +133,20 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             _targetMessageNum++;
           }
         }
-//        mZJddRzeuqfa5g4QLNcuC2YTpiK2
 
+////        mZJddRzeuqfa5g4QLNcuC2YTpiK2
+//
+        print(chatRoomInfo.targetUserId);
         Firestore.instance
             .collection('ChatRooms')
-            .document('CWJeX3cEF51N319OIRy9')
+            .document(chatRoomInfo.roomId)
             .updateData(
-            {'aiKbn6uPOoVt5ClYlj2KQtivgWx2': '0'});
+            {userId: '0'});
         Firestore.instance
             .collection('ChatRooms')
-            .document('CWJeX3cEF51N319OIRy9')
+            .document(chatRoomInfo.roomId)
             .updateData(
-            {'mZJddRzeuqfa5g4QLNcuC2YTpiK2': _targetMessageNum.toString()});
+            {chatRoomInfo.targetUserId: _targetMessageNum.toString()});
 
         return _buildList(context, snapshot.data.documents);
       },
@@ -179,7 +185,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0.0, 6.0, 10.0, 0.0),
                 child: Image.network(
-                  recentMessage.imageURL,
+                  chatRoomInfo.imageURL,
                   width: 50.0,
                   height: 50.0,
                   fit: BoxFit.fill,
@@ -379,14 +385,14 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     //채팅방 안을 보여주기 위해 쓰는 것
     Firestore.instance
         .collection("ChatRooms")
-        .document("CWJeX3cEF51N319OIRy9")
+        .document(chatRoomInfo.roomId)
         .collection("Message")
         .document(timeStamp)
         .setData(messageMap);
 
     //채팅방 리스트에 보여주기 위해 쓰는 것
     Firestore.instance.collection('ChatRooms')
-        .document('CWJeX3cEF51N319OIRy9')
+        .document(chatRoomInfo.roomId)
         .updateData({
           'recentMessage' : message.message,
           'recentMessageTime' : message.messageTime,

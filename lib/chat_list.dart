@@ -4,6 +4,7 @@ import 'package:badges/badges.dart';
 import 'model/recent_message.dart';
 import 'chat_room.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'model/chat_room_info.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -81,19 +82,26 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
     final recentMessage = RecentMessage.fromSnapshot(data);
+    final imageURL = recentMessage.imageURL;
+    final roomId = recentMessage.roomId;
+    final posterName = recentMessage.posterName;
+    final targetUserId = _getTargetUserId(roomId);
+
+    final chatRoomInfo = ChatRoomInfo(
+        roomId: roomId, imageURL: imageURL, targetUserId: targetUserId, posterName: posterName);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _messageNum = int.parse(data[userId]);
       });
     });
     return Padding(
-      key: ValueKey(recentMessage.circleName),
+      key: ValueKey(recentMessage.posterName),
       padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
       child: ListTile(
         title: Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: Text(
-            recentMessage.circleName,
+            recentMessage.posterName,
             style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.bold),
@@ -129,7 +137,7 @@ class _ChatPageState extends State<ChatPage> {
             context,
             MaterialPageRoute(
                 builder: (context) => ChatRoomPage(
-                      recentMessage: recentMessage,
+                      chatRoomInfo: chatRoomInfo,
                     ))),
       ),
     );
@@ -140,8 +148,15 @@ class _ChatPageState extends State<ChatPage> {
       if (user != null) {
         userId = user.uid;
         userName = user.displayName;
-        print(userId);
       }
     });
+  }
+
+  String _getTargetUserId(String roomId) {
+    if (userId == roomId.substring(0, 28)) {
+      return roomId.substring(28);
+    } else {
+      return roomId.substring(0, 28);
+    }
   }
 }
