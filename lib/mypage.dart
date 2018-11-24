@@ -212,14 +212,14 @@ class _MyPageState extends State<MyPage> {
                 Text(
                   '나의 태그',
                   style: TextStyle(
-                      color: campsterRed200, fontWeight: FontWeight.bold),
+                      color: camposterRed200, fontWeight: FontWeight.bold),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 140.0),
                   child: Text(
                     '알림 태그',
                     style: TextStyle(
-                        color: campsterRed200, fontWeight: FontWeight.bold),
+                        color: camposterRed200, fontWeight: FontWeight.bold),
                   ),
                 )
               ],
