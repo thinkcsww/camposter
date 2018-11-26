@@ -280,9 +280,6 @@ class _HomePageState extends State<HomePage> {
   Widget _buildPopularListItem(BuildContext context, DocumentSnapshot data) {
     final poster = Poster.forHomePosterList(data);
 
-    final targetUserId = poster.creatorId;
-    final imageURL = poster.imageURL;
-    final posterName = poster.posterName;
     return Container(
       width: 300.0,
       height: 370.0,
@@ -456,10 +453,6 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildCategoryListItem(BuildContext context, DocumentSnapshot data) {
     final poster = Poster.forHomePosterList(data);
-
-    final targetUserId = poster.creatorId;
-    final imageURL = poster.imageURL;
-    final posterName = poster.posterName;
     return Container(
       width: 300.0,
       height: 370.0,

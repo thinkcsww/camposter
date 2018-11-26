@@ -58,18 +58,20 @@ class _ChatPageState extends State<ChatPage> {
             )
           ],
         ),
-        Flexible(child: _buildBody(context)),
+        _buildBody(context),
       ],
     );
   }
 
   Widget _buildBody(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('ChatRooms').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
-        return _buildList(context, snapshot.data.documents);
-      },
+    return Flexible(
+      child: StreamBuilder<QuerySnapshot>(
+        stream: Firestore.instance.collection('ChatRooms').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return LinearProgressIndicator();
+          return _buildList(context, snapshot.data.documents);
+        },
+      ),
     );
   }
 
