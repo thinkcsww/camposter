@@ -23,6 +23,13 @@
             </list>
           </value>
         </entry>
+        <entry key="autocomplete_textfield">
+          <value>
+            <list>
+              <option value="$USER_HOME$/Library/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/autocomplete_textfield-1.5.1/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="badges">
           <value>
             <list>
@@ -111,6 +118,13 @@
           <value>
             <list>
               <option value="$USER_HOME$/Library/Developer/flutter/packages/flutter/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_picker">
+          <value>
+            <list>
+              <option value="$USER_HOME$/Library/Developer/flutter/.pub-cache/git/flutter_picker-82eb4ebf9e57a55143e18f53c92516a3351d92be/lib" />
             </list>
           </value>
         </entry>
@@ -467,9 +481,11 @@
       </option>
     </properties>
     <CLASSES>
+      <root url="file://$USER_HOME$/Library/Developer/flutter/.pub-cache/git/flutter_picker-82eb4ebf9e57a55143e18f53c92516a3351d92be/lib" />
       <root url="file://$USER_HOME$/Library/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/analyzer-0.32.4/lib" />
       <root url="file://$USER_HOME$/Library/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/args-1.5.0/lib" />
       <root url="file://$USER_HOME$/Library/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.0.8/lib" />
+      <root url="file://$USER_HOME$/Library/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/autocomplete_textfield-1.5.1/lib" />
       <root url="file://$USER_HOME$/Library/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/badges-0.0.6/lib" />
       <root url="file://$USER_HOME$/Library/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/boolean_selector-1.0.4/lib" />
       <root url="file://$USER_HOME$/Library/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/charcode-1.1.2/lib" />

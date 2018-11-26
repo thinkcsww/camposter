@@ -1,7 +1,10 @@
 import 'package:camposter/model/poster.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'colors.dart';
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -10,37 +13,67 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _searchController = TextEditingController();
+//  final _searchController = TextEditingController();
   final buttonActiveColor = camposterRed;
   final buttonDeactiveColor = camposterRed200;
+  GlobalKey<AutoCompleteTextFieldState<String>> textFieldKey = new GlobalKey();
   bool categoryClicked = false;
   Color categoryButtonColor,
       categoryButtonBorderColor,
       popularButtonColor,
       popularButtonBorderColor;
   Widget currentBody;
-  List<String> categoryList = ['#공모전', '#취업', '#신앙', '#동아리', '#학회', '#공연'];
+  String queryPosterName, queryPosterCategory;
+  String schoolName = "", userId = "", userName = "";
+  List<String> categoryList = ['공모전', '취업', '신앙', '동아리', '학회', '공연'];
   List<Color> categoryListColor = [camposterRed, camposterRed200, camposterRed200, camposterRed200, camposterRed200, camposterRed200];
   List<Color> categoryListBorderColor = [camposterRed, Colors.white, Colors.white, Colors.white, Colors.white, Colors.white];
+  List<String> suggestions = [];
+  List<String> myTags = [];
+  double spinKitState = 0.0;
 
   @override
   void initState() {
     super.initState();
+    _showSpinKit();
+    queryPosterName = null;
+    queryPosterCategory = null;
     categoryButtonColor = buttonDeactiveColor;
     categoryButtonBorderColor = Colors.white;
     popularButtonColor = buttonActiveColor;
     popularButtonBorderColor = buttonActiveColor;
     currentBody = _buildPopularBody(context);
 
+    _getCurrentUserId(context).then((FirebaseUser user) {
+        _getSchoolNameFromDB(user).then((done) {
+          _getPosterListFromDB().then((done) {
+            _hideSpinKit();
+          });
+        });
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Stack(
       children: <Widget>[
-        _buildAppBar(context),
-        _buildButtonRow(context),
-        currentBody,
+        ListView(
+          children: <Widget>[
+            _buildAppBar(context),
+            _buildButtonRow(context),
+            currentBody,
+          ],
+        ),
+        Opacity(
+          opacity: spinKitState,
+          child: SpinKitCircle(
+            color: Theme
+                .of(context)
+                .primaryColor,
+            size: 50.0,
+          ),
+        ),
       ],
     );
   }
@@ -84,11 +117,34 @@ class _HomePageState extends State<HomePage> {
                     Flexible(
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 8.0),
-                        child: TextField(
+                        child: AutoCompleteTextField<String>(
+                          key: textFieldKey,
+                          submitOnSuggestionTap: true,
+                          suggestions: suggestions,
+                          textChanged: (item) {
+                            queryPosterName = item;
+                          },
+                          textInputAction: TextInputAction.go,
+                          textSubmitted: (item) {
+                            setState(() {
+                              queryPosterName = item;
+                              currentBody = _buildPopularBody(context);
+                            });
+                          },
+                          itemBuilder: (context, item) {
+                            return new Padding(
+                                padding: EdgeInsets.all(8.0), child: new Text(item, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),));
+                          },
+                          itemSorter: (a, b) {
+                            return a.compareTo(b);
+                          },
+                          itemFilter: (item, query) {
+                            return item.toLowerCase().startsWith(query.toLowerCase());
+                          },
                           decoration: InputDecoration(
                             border: InputBorder.none,
                           ),
-                          controller: _searchController,
+
                         ),
                       ),
                     ),
@@ -99,7 +155,7 @@ class _HomePageState extends State<HomePage> {
           ),
           IconButton(
             icon: Icon(
-              Icons.settings,
+              Icons.autorenew,
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {},
@@ -164,8 +220,17 @@ class _HomePageState extends State<HomePage> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            _buildPopularHomeLeftView(context),
-            _buildPopularPosterListView(context),
+            Flexible(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: <Widget>[
+                    _buildPopularHomeLeftView(context),
+                    _buildPopularPosterListView(context),
+                  ],
+                ),
+              ),
+            )
           ],
         )
       ],
@@ -226,7 +291,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('#리눅스해커스',
+                  Text(schoolName,
                       style: TextStyle(
                           color: camposterRed,
                           fontSize: 16.0,
@@ -246,21 +311,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildPopularPosterListView(BuildContext context) {
-    return Flexible(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance
-              .collection('Posters')
-              .where('auth', isEqualTo: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) return Text('Error, please try again');
-            if (!snapshot.hasData) return LinearProgressIndicator();
-            return _buildPopularList(context, snapshot.data.documents);
-          },
-        ),
-      ),
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('Posters')
+          .where('auth', isEqualTo: true)
+          .where('posterName', isEqualTo: queryPosterName)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return Text('Error, please try again');
+        if (!snapshot.hasData) return LinearProgressIndicator();
+        return _buildPopularList(context, snapshot.data.documents);
+      },
     );
   }
 
@@ -268,9 +329,10 @@ class _HomePageState extends State<HomePage> {
       BuildContext context, List<DocumentSnapshot> snapshot) {
     return Container(
       height: 350.0,
-      width: 300.0,
+      width: snapshot.length * 300.0,
       child: ListView(
           scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
           children: snapshot
               .map((data) => _buildPopularListItem(context, data))
               .toList()),
@@ -337,8 +399,17 @@ class _HomePageState extends State<HomePage> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            _buildCategoryHomeLeftView(context),
-            _buildCategoryPosterListView(context),
+            Flexible(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: <Widget>[
+                    _buildCategoryHomeLeftView(context),
+                    _buildCategoryPosterListView(context),
+                  ],
+                ),
+              ),
+            )
           ],
         )
       ],
@@ -368,7 +439,7 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Text(categoryList[i],
+                Text('#${categoryList[i]}',
                     style: TextStyle(
                         color: categoryListColor[i],
                         fontSize: 16.0,
@@ -420,34 +491,112 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildCategoryPosterListView(BuildContext context) {
-    return Flexible(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance
-              .collection('Posters')
-              .where('auth', isEqualTo: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) return Text('Error, please try again');
-            if (!snapshot.hasData) return LinearProgressIndicator();
-            return _buildCategoryList(context, snapshot.data.documents);
-          },
-        ),
-      ),
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('Posters')
+          .where('auth', isEqualTo: true)
+          .where('category', isEqualTo: queryPosterCategory)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return Text('Error, please try again');
+        if (!snapshot.hasData) return LinearProgressIndicator();
+        if (snapshot.data.documents.length == 0) return emptyCard;
+        return _buildCategoryList(context, snapshot.data.documents);
+      },
     );
   }
+  var emptyCard = Container(
+    width: 300.0,
+    height: 350.0,
+    child: Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          AspectRatio(
+            aspectRatio: 13 / 11,
+            child: Image.asset(
+              'images/logo.png',
+              width: 500.0,
+              height: 300.0,
+              fit: BoxFit.fill,
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(24.0, 20.0, 0.0, 0.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    '해당 카테고리에 게시된 포스터가 없습니다.',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 12.0),
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Row(
+                    children: <Widget>[],
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    ),
+  );
 
   Widget _buildCategoryList(
       BuildContext context, List<DocumentSnapshot> snapshot) {
     return Container(
       height: 350.0,
-      width: 300.0,
+      width: snapshot.length * 300.0,
       child: ListView(
           scrollDirection: Axis.horizontal,
           children: snapshot
               .map((data) => _buildCategoryListItem(context, data))
               .toList()),
+    );
+  }
+
+  Widget _buildEmptyCard(BuildContext context) {
+    return Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          AspectRatio(
+            aspectRatio: 13 / 11,
+            child: Image.asset(
+              'images/logo.png',
+              width: 500.0,
+              height: 300.0,
+              fit: BoxFit.fill,
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(24.0, 20.0, 0.0, 0.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    '해당 카테고리 관련 포스터가 없습니다.',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15.0),
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Row(
+                    children: <Widget>[],
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -517,6 +666,7 @@ class _HomePageState extends State<HomePage> {
         categoryButtonColor = buttonDeactiveColor;
         categoryButtonBorderColor = Colors.white;
         currentBody = _buildPopularBody(context);
+        queryPosterName = null;
       });
     }
   }
@@ -533,6 +683,7 @@ class _HomePageState extends State<HomePage> {
         popularButtonColor = buttonDeactiveColor;
         popularButtonBorderColor = Colors.white;
         currentBody = _buildCategoryBody(context);
+        queryPosterName = null;
       });
     }
   }
@@ -542,6 +693,7 @@ class _HomePageState extends State<HomePage> {
   ///
   void categoryToggle(int clickedCategory, int length) {
     setState(() {
+      queryPosterCategory = categoryList[clickedCategory];
       categoryListColor[clickedCategory] = camposterRed;
       categoryListBorderColor[clickedCategory] = camposterRed;
       for (var i = 0; i < length; i ++) {
@@ -551,6 +703,40 @@ class _HomePageState extends State<HomePage> {
         }
       }
       currentBody = _buildCategoryBody(context);
+    });
+  }
+  ///
+  /// Search에 보여줄 Suggestion을 위해 모든 포스터 리스트를 DB에서 받아온다.
+  ///
+  Future _getPosterListFromDB() async {
+    await Firestore.instance.collection('Posters').getDocuments().then((QuerySnapshot snapshot) {
+      for (var i = 0; i < snapshot.documents.length; i ++) {
+        suggestions.add(snapshot.documents[i].data['posterName']);
+      }
+    });
+  }
+  Future _getSchoolNameFromDB(FirebaseUser user) async {
+    var result = await Firestore.instance.collection('Users').document(user.uid).get();
+    setState(() {
+      schoolName = '#${result.data['school']}';
+      print(schoolName);
+      currentBody = _buildPopularBody(context);
+      myTags.add(schoolName);
+    });
+  }
+  Future<FirebaseUser> _getCurrentUserId(BuildContext context) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    return user;
+  }
+
+  void _showSpinKit() {
+    setState(() {
+      spinKitState = 1.0;
+    });
+  }
+  void _hideSpinKit() {
+    setState(() {
+      spinKitState = 0.0;
     });
   }
 

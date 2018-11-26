@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,18 +10,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_picker/flutter_picker.dart';
 
 class AddPosterPage extends StatefulWidget {
+  String category;
+
+  AddPosterPage({Key key, @required this.category}) : super(key: key);
+
   @override
-  _AddPosterPageState createState() => _AddPosterPageState();
+  _AddPosterPageState createState() => _AddPosterPageState(category: category);
 }
 
 class _AddPosterPageState extends State<AddPosterPage> {
   final _posterNameController = TextEditingController();
   final _posterOrganizerController = TextEditingController();
-  final _productDescriptionController = TextEditingController();
   final _timeLocationController = TextEditingController();
 
+  _AddPosterPageState({Key key, @required this.category});
+
+  String category;
   String userId;
   File _imageFile;
   String imageURL;
@@ -50,12 +58,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
-                    _handleSubmitted(
-                      _posterNameController.text,
-                      _posterOrganizerController.text,
-                      _productDescriptionController.text,
-                      _timeLocationController.text,
-                    );
+                    alertDialog(context);
                   },
                 ),
               )
@@ -74,8 +77,22 @@ class _AddPosterPageState extends State<AddPosterPage> {
           children: <Widget>[
             _buildImageView(),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
+                Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10.0, left: 40.0),
+                      child: GestureDetector(
+                        onTap: () => showPickerDialog(context),
+                        child: Text(
+                  '#$category',
+                  style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22.0,
+                          color: Theme.of(context).primaryColor),
+                ),
+                      ),
+                    )),
                 IconButton(
                     icon: Icon(Icons.camera_alt),
                     onPressed: () {
@@ -91,41 +108,32 @@ class _AddPosterPageState extends State<AddPosterPage> {
                   TextField(
                     decoration: InputDecoration(
                         hintText: '포스터 제목',
-                        hintStyle: TextStyle(color: Colors.blue),
+                        hintStyle:
+                            TextStyle(color: Theme.of(context).primaryColor),
                         focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                          color: Colors.blue,
+                          color: Theme.of(context).primaryColor,
                         ))),
                     controller: _posterNameController,
                   ),
                   TextField(
                     decoration: InputDecoration(
-                        hintText: '주최',
-                        hintStyle: TextStyle(color: Colors.blue.shade100),
+                        hintText: '게시자 : 단체명을 정확히 기입해주세요.',
+                        hintStyle:
+                            TextStyle(color: Theme.of(context).primaryColor),
                         focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                          color: Colors.blue,
-                        ))),
+                                color: Theme.of(context).primaryColor))),
                     controller: _posterOrganizerController,
                   ),
                   TextField(
                     decoration: InputDecoration(
-                        hintText: '내용',
-                        hintStyle: TextStyle(color: Colors.blue.shade100),
-                        focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                          color: Colors.blue,
-                        ))),
-                    controller: _productDescriptionController,
-                  ),
-                  TextField(
-                    decoration: InputDecoration(
                         hintText: '시간/장소',
-                        hintStyle: TextStyle(color: Colors.blue.shade100),
+                        hintStyle:
+                            TextStyle(color: Theme.of(context).primaryColor),
                         focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                          color: Colors.blue,
-                        ))),
+                                color: Theme.of(context).primaryColor))),
                     controller: _timeLocationController,
                   ),
                 ],
@@ -184,29 +192,26 @@ class _AddPosterPageState extends State<AddPosterPage> {
   }
 
   void _handleSubmitted(
-      String name, String organizer, String description, String timeLocation) {
+      String name, String organizer, String timeLocation) {
     _showSpinKit();
     if (name.isNotEmpty &&
         organizer.isNotEmpty &&
-        description.isNotEmpty &&
         _imageFile != null) {
       String uuid = Uuid().v1();
       var now = DateTime.now();
       var formatter = DateFormat.yMd().add_jm();
       var formattedTime = formatter.format(now).toString();
-      _uploadFile(uuid).then((f) {
-
-      }).then((f) {
+      _uploadFile(uuid).then((f) {}).then((f) {
         Firestore.instance.collection('Posters').document(uuid).setData({
           'posterName': name,
           'organizer': organizer,
-          'description': description,
           'creatorId': userId,
           'created': formattedTime,
           'modified': formattedTime,
           'imageURL': imageURL,
           'imagePath': 'images/$uuid',
-          'auth' : false,
+          'category': category,
+          'auth': false,
         }).then((f) {
           Firestore.instance
               .collection('Users')
@@ -218,6 +223,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
             'organizer': organizer,
             'imageURL': imageURL,
             'imagePath': 'images/$uuid',
+            'category': category,
           }).then((f) {
             _hideSpinKit();
             Fluttertoast.showToast(msg: '업로드 완료');
@@ -231,15 +237,65 @@ class _AddPosterPageState extends State<AddPosterPage> {
     }
   }
 
-
   void _showSpinKit() {
     setState(() {
       spinKitState = 1.0;
     });
   }
+
   void _hideSpinKit() {
     setState(() {
       spinKitState = 0.0;
     });
   }
+
+  showPickerDialog(BuildContext context) {
+    Picker(
+        adapter: PickerDataAdapter<String>(
+            pickerdata: ['공모전', '취업', '신앙', '동아리', '학회', '공연']),
+        hideHeader: true,
+        title: new Text(
+          "카테고리",
+          style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontWeight: FontWeight.bold),
+        ),
+        onConfirm: (Picker picker, List value) {
+          setState(() {
+            category = picker.getSelectedValues()[0];
+          });
+          print(picker.getSelectedValues());
+          print(category);
+        }).showDialog(context);
+  }
+
+  void alertDialog(BuildContext context) {
+    showDialog(context: context, builder: (BuildContext context) {
+      return CupertinoAlertDialog(
+        title: Text('알림'),
+        content: Text('정말 등록하시겠습니까?'),
+        actions: <Widget>[
+          CupertinoDialogAction(
+            child: Text('예'),
+            onPressed: () {
+              _handleSubmitted(
+                _posterNameController.text,
+                _posterOrganizerController.text,
+                _timeLocationController.text,
+              );
+              Navigator.pop(context);
+            },
+          ),
+          CupertinoDialogAction(
+            child: Text('아니오'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
+      );
+    });
+  }
+
+
 }
