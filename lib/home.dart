@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
     Colors.white
   ];
   List<String> suggestions = [];
-  List<String> myTags = [];
+  List<String> myTags = ["위덕대"];
   double spinKitState = 0.0;
 
   @override
@@ -176,7 +176,12 @@ class _HomePageState extends State<HomePage> {
               Icons.autorenew,
               color: Theme.of(context).primaryColor,
             ),
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                myTags.clear();
+                currentBody = _buildPopularBody(context);
+              });
+            },
           )
         ],
       ),
@@ -306,18 +311,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.only(top: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(schoolName,
-                      style: TextStyle(
-                          color: camposterRed,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold)),
-                  Text('#나의 태그',
-                      style: TextStyle(
-                          color: camposterRed,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold)),
-                ],
+                children: _buildMyTagList(myTags),
               ),
             ),
           ],
@@ -331,6 +325,7 @@ class _HomePageState extends State<HomePage> {
       stream: Firestore.instance
           .collection('Posters')
           .where('auth', isEqualTo: true)
+          .where('school', isEqualTo: schoolName)
           .where('posterName', isEqualTo: queryPosterName)
           .snapshots(),
       builder: (context, snapshot) {
@@ -515,6 +510,7 @@ class _HomePageState extends State<HomePage> {
       stream: Firestore.instance
           .collection('Posters')
           .where('auth', isEqualTo: true)
+          .where('school', isEqualTo: schoolName)
           .where('category', isEqualTo: queryPosterCategory)
           .snapshots(),
       builder: (context, snapshot) {
@@ -689,6 +685,30 @@ class _HomePageState extends State<HomePage> {
   }
 
   ///
+  /// 나의 태그 리스트 ex) 한동대학교 만들어줌
+  ///
+
+  List<Text> _buildMyTagList(List<String> myTagList) {
+    List<Text> tagList = [
+      Text('#$schoolName',
+          style: TextStyle(
+              color: camposterRed,
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold)
+      ),
+    ];
+    for (var i = 1; i < myTagList.length + 1; i++) {
+      tagList.add(Text('#${myTagList[i - 1]}',
+          style: TextStyle(
+              color: camposterRed,
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold)
+      ));
+    }
+    return tagList;
+  }
+
+  ///
   /// Search에 보여줄 Suggestion을 위해 모든 포스터 리스트를 DB에서 받아온다.
   ///
   Future _getPosterListFromDB() async {
@@ -706,10 +726,10 @@ class _HomePageState extends State<HomePage> {
     var result =
         await Firestore.instance.collection('Users').document(user.uid).get();
     setState(() {
-      schoolName = '#${result.data['school']}';
+      schoolName = result.data['school'];
       print(schoolName);
       currentBody = _buildPopularBody(context);
-      myTags.add(schoolName);
+//      myTags.add(schoolName);
     });
   }
 

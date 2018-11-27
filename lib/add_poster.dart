@@ -29,6 +29,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
   _AddPosterPageState({Key key, @required this.category});
 
   String category;
+  String schoolName;
   String userId;
   File _imageFile;
   String imageURL;
@@ -38,7 +39,9 @@ class _AddPosterPageState extends State<AddPosterPage> {
   @override
   void initState() {
     super.initState();
-    _getCurrentUserId(context);
+    _getCurrentUserId(context).then((FirebaseUser user) {
+      _getSchoolNameFromDB(user);
+    });
   }
 
   @override
@@ -181,16 +184,6 @@ class _AddPosterPageState extends State<AddPosterPage> {
     imageURL = await (await uploadTask.onComplete).ref.getDownloadURL();
   }
 
-  void _getCurrentUserId(BuildContext context) {
-    FirebaseAuth.instance.onAuthStateChanged.listen((user) {
-      if (user != null) {
-        setState(() {
-          userId = user.uid;
-        });
-      }
-    });
-  }
-
   void _handleSubmitted(
       String name, String organizer, String timeLocation) {
     _showSpinKit();
@@ -203,6 +196,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
       var formattedTime = formatter.format(now).toString();
       _uploadFile(uuid).then((f) {}).then((f) {
         Firestore.instance.collection('Posters').document(uuid).setData({
+          'school': schoolName,
           'posterName': name,
           'organizer': organizer,
           'creatorId': userId,
@@ -295,6 +289,20 @@ class _AddPosterPageState extends State<AddPosterPage> {
         ],
       );
     });
+  }
+
+  Future _getSchoolNameFromDB(FirebaseUser user) async {
+    var result =
+    await Firestore.instance.collection('Users').document(user.uid).get();
+    setState(() {
+      schoolName = result.data['school'];
+      print(schoolName);
+    });
+  }
+
+  Future<FirebaseUser> _getCurrentUserId(BuildContext context) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    return user;
   }
 
 

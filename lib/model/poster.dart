@@ -8,12 +8,13 @@ class Poster{
   final String organizer;
   final String category;
   final String posterId;
+  final String school;
 
-  Poster.forSearchPosterList(DocumentSnapshot snapshot, {this.posterId, this.category, this.organizer, this.imageURL, this.creatorId})
+  Poster.forSearchPosterList(DocumentSnapshot snapshot, { this.school, this.posterId, this.category, this.organizer, this.imageURL, this.creatorId})
       : assert(snapshot['posterName'] != null),
         posterName = snapshot['posterName'];
 
-  Poster.forCreatorList(DocumentSnapshot snapshot, {this.posterId, this.category, this.organizer})
+  Poster.forCreatorList(DocumentSnapshot snapshot, { this.school, this.posterId, this.category, this.organizer})
       : assert(snapshot['creatorId'] != null),
         assert(snapshot['imageURL'] != null),
         assert(snapshot['posterName'] != null),
@@ -21,7 +22,7 @@ class Poster{
         imageURL = snapshot['imageURL'],
         posterName = snapshot['posterName'];
 
-  Poster.forDetailPoster(DocumentSnapshot snapshot, {this.category})
+  Poster.forDetailPoster(DocumentSnapshot snapshot, {this.school, this.category})
       : assert(snapshot['organizer'] != null),
         assert(snapshot['imageURL'] != null),
         assert(snapshot['posterName'] != null),
@@ -38,13 +39,15 @@ class Poster{
         assert(snapshot['posterName'] != null),
         assert(snapshot['organizer'] != null),
         assert(snapshot['category'] != null),
+        assert(snapshot['school'] != null),
         creatorId = snapshot['creatorId'],
+        school = snapshot['school'],
         imageURL = snapshot['imageURL'],
         organizer = snapshot['organizer'],
         category = snapshot['category'],
         posterName = snapshot['posterName'];
 
-  Poster.forPosterIPosted(DocumentSnapshot snapshot, {this.posterId, this.category, this.creatorId})
+  Poster.forPosterIPosted(DocumentSnapshot snapshot, {this.school, this.posterId, this.category, this.creatorId})
       : assert(snapshot['organizer'] != null),
         assert(snapshot['imageURL'] != null),
         assert(snapshot['posterName'] != null),
