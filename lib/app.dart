@@ -7,6 +7,7 @@ import 'poster_creator_list.dart';
 import 'signup_info.dart';
 import 'mypage_poster_iposted.dart';
 import 'add_poster.dart';
+import 'setting.dart';
 
 class CamposterApp extends StatelessWidget {
 
@@ -18,7 +19,7 @@ class CamposterApp extends StatelessWidget {
       title: 'Camposter',
       theme: _buildCamposterTheme(),
       home: LoginPage(),
-//      initixxalRoute: '/login',
+//      initialRoute: '/login',
       onGenerateRoute: _getRoute,
       routes: {
         '/login': (context) => LoginPage(),
@@ -28,6 +29,8 @@ class CamposterApp extends StatelessWidget {
         '/sign_up_info' : (context) => SignUpInfoPage(),
         '/mypage_poster_iposted' : (context) => MyPagePosterIPostedPage(),
         '/add_poster' : (context) => AddPosterPage(),
+        '/setting' : (context) => SettingPage(),
+
       },
     );
   }
