@@ -560,46 +560,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildEmptyCard(BuildContext context) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          AspectRatio(
-            aspectRatio: 13 / 11,
-            child: Image.asset(
-              'images/logo.png',
-              width: 500.0,
-              height: 300.0,
-              fit: BoxFit.fill,
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(24.0, 20.0, 0.0, 0.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    '해당 카테고리 관련 포스터가 없습니다.',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 15.0),
-                  ),
-                  SizedBox(
-                    height: 8.0,
-                  ),
-                  Row(
-                    children: <Widget>[],
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
   Widget _buildCategoryListItem(BuildContext context, DocumentSnapshot data) {
     final poster = Poster.forHomePosterList(data);
     return Container(
