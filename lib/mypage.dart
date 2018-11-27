@@ -9,9 +9,9 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  String userId;
-  String userEmail;
-  String userName;
+  String userId = "";
+  String userEmail = "";
+  String userName = "";
 
   @override
   void initState() {
@@ -28,12 +28,20 @@ class _MyPageState extends State<MyPage> {
 
   Widget _buildBody(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 30.0, right: 20.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          _buildAppBar(context),
-          _buildTopContainer(context),
+          Container(
+            decoration: BoxDecoration(
+              color: myPageBackground
+            ),
+            child: Column(
+              children: <Widget>[
+                _buildAppBar(context),
+                _buildTopContainer(context),
+              ],
+            ),
+          ),
           _buildBottomContainer(context),
         ],
       ),
@@ -42,14 +50,14 @@ class _MyPageState extends State<MyPage> {
 
   Widget _buildAppBar(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(top: 40.0),
+      padding: const EdgeInsets.only(top: 40.0, left: 30.0, right: 20.0),
       child: Row(
         children: <Widget>[
           Expanded(
             child: Text(
               "마이 페이지",
               style: TextStyle(
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.white,
                   fontSize: 28.0,
                   fontWeight: FontWeight.bold),
             ),
@@ -57,23 +65,25 @@ class _MyPageState extends State<MyPage> {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              _signOut();
+              Navigator.pushNamed(context, '/setting');
+//              _signOut();
             },
-            color: Theme.of(context).primaryColor,
+            color: Colors.white,
           ),
         ],
       ),
     );
   }
 
-  Future <Null> _signOut()  async{
+  Future <Null> _signOut() async {
     await FirebaseAuth.instance.signOut();
     Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
   Widget _buildTopContainer(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(top: 40.0),
+      padding: const EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0),
+      margin: const EdgeInsets.only(bottom: 20.0),
       child: Row(
         children: <Widget>[
           Padding(
@@ -99,7 +109,7 @@ class _MyPageState extends State<MyPage> {
                       Text(
                         userName,
                         style: TextStyle(
-                            color: Theme.of(context).primaryColor,
+                            color: Colors.white,
                             fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -122,7 +132,7 @@ class _MyPageState extends State<MyPage> {
                         Text(
                           userName,
                           style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold),
                         )
                       ],
@@ -136,7 +146,7 @@ class _MyPageState extends State<MyPage> {
                         Text(
                           '21300765',
                           style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold),
                         )
                       ],
@@ -148,9 +158,9 @@ class _MyPageState extends State<MyPage> {
                         child: Text(
                           '기본정보변경',
                           style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 12.0),
+                              fontSize: 10.0),
                         ),
                         onPressed: () {},
                       ),
@@ -158,9 +168,9 @@ class _MyPageState extends State<MyPage> {
                         child: Text(
                           '내가 게시한 포스터',
                           style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 12.0),
+                              fontSize: 10.0),
                         ),
                         onPressed: () {
                           Navigator.pushNamed(context, '/mypage_poster_iposted');
@@ -179,12 +189,13 @@ class _MyPageState extends State<MyPage> {
 
   Widget _buildBottomContainer(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.only(left:30.0, right: 20.0),
       child: Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(top: 30.0),
+            padding: const EdgeInsets.only(top: 50.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
                   decoration: BoxDecoration(
@@ -206,20 +217,20 @@ class _MyPageState extends State<MyPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 20.0, left: 10.0),
+            padding: const EdgeInsets.only(top: 30.0, left: 10.0),
             child: Row(
               children: <Widget>[
                 Text(
                   '나의 태그',
                   style: TextStyle(
-                      color: campsterRed200, fontWeight: FontWeight.bold),
+                      color: camposterRed200, fontWeight: FontWeight.bold),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 140.0),
                   child: Text(
                     '알림 태그',
                     style: TextStyle(
-                        color: campsterRed200, fontWeight: FontWeight.bold),
+                        color: camposterRed200, fontWeight: FontWeight.bold),
                   ),
                 )
               ],
@@ -234,20 +245,29 @@ class _MyPageState extends State<MyPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        '#나의 태그ㅇㅇㅇ',
-                        style: TextStyle(
-                            color: camposterRed, fontWeight: FontWeight.bold),
+                      Container(
+                        height: 30.0,
+                        child: Text(
+                          '#나의 태그ㅇㅇㅇ',
+                          style: TextStyle(
+                              color: camposterRed, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      Text(
-                        '#나의 태그ㅇㅇㅇ',
-                        style: TextStyle(
-                            color: camposterRed, fontWeight: FontWeight.bold),
+                      Container(
+                        height: 30.0,
+                        child: Text(
+                          '#나의 태그ㅇㅇㅇ',
+                          style: TextStyle(
+                              color: camposterRed, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      Text(
-                        '#나의 태그ㅇㅇㅇ',
-                        style: TextStyle(
-                            color: camposterRed, fontWeight: FontWeight.bold),
+                      Container(
+                        height: 30.0,
+                        child: Text(
+                          '#나의 태그ㅇㅇㅇ',
+                          style: TextStyle(
+                              color: camposterRed, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
@@ -257,20 +277,29 @@ class _MyPageState extends State<MyPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        '#나의 태그',
-                        style: TextStyle(
-                            color: camposterRed, fontWeight: FontWeight.bold),
+                      Container(
+                        height: 30.0,
+                        child: Text(
+                          '#나의 태그ㅇㅇㅇ',
+                          style: TextStyle(
+                              color: camposterRed, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      Text(
-                        '#나의 태그ㅇㅇㅇ',
-                        style: TextStyle(
-                            color: camposterRed, fontWeight: FontWeight.bold),
+                      Container(
+                        height: 30.0,
+                        child: Text(
+                          '#나의 태그ㅇㅇㅇ',
+                          style: TextStyle(
+                              color: camposterRed, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      Text(
-                        '#나의 태그ㅇㅇㅇ',
-                        style: TextStyle(
-                            color: camposterRed, fontWeight: FontWeight.bold),
+                      Container(
+                        height: 30.0,
+                        child: Text(
+                          '#나의 태그ㅇㅇㅇ',
+                          style: TextStyle(
+                              color: camposterRed, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),

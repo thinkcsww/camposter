@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'model/poster.dart';
-
+import 'package:flutter_picker/flutter_picker.dart';
+import 'add_poster.dart';
 
 class MyPagePosterIPostedPage extends StatefulWidget {
   @override
@@ -46,10 +47,11 @@ class _MyPagePosterIPostedPageState extends State<MyPagePosterIPostedPage> {
           }),
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.delete, color: Theme.of(context).primaryColor,),
-          onPressed: () {
-
-          },
+          icon: Icon(
+            Icons.delete,
+            color: Theme.of(context).primaryColor,
+          ),
+          onPressed: () {},
         )
       ],
       centerTitle: true,
@@ -70,7 +72,11 @@ class _MyPagePosterIPostedPageState extends State<MyPagePosterIPostedPage> {
   Widget _buildListView(BuildContext context) {
     return Flexible(
       child: StreamBuilder(
-        stream: Firestore.instance.collection('Users').document(userId).collection('MyPosters').snapshots(),
+        stream: Firestore.instance
+            .collection('Users')
+            .document(userId)
+            .collection('MyPosters')
+            .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
 
@@ -103,7 +109,8 @@ class _MyPagePosterIPostedPageState extends State<MyPagePosterIPostedPage> {
               height: 300.0,
               fit: BoxFit.fill,
             ),
-          ), Expanded(
+          ),
+          Expanded(
             child: Padding(
               padding: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
               child: Column(
@@ -115,8 +122,8 @@ class _MyPagePosterIPostedPageState extends State<MyPagePosterIPostedPage> {
                       children: <Widget>[
                         Text(
                           poster.posterName,
-                          style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15.0),
                         ),
                       ],
                     ),
@@ -145,7 +152,7 @@ class _MyPagePosterIPostedPageState extends State<MyPagePosterIPostedPage> {
             child: IconButton(
               icon: Icon(Icons.border_color),
               onPressed: () {
-                Navigator.pushNamed(context, '/add_poster');
+                showPickerDialog(context);
               },
               color: Theme.of(context).primaryColor,
             )),
@@ -163,4 +170,20 @@ class _MyPagePosterIPostedPageState extends State<MyPagePosterIPostedPage> {
     });
   }
 
+  showPickerDialog(BuildContext context) {
+    Picker(
+        adapter: PickerDataAdapter<String>(
+            pickerdata: ['공모전', '취업', '신앙', '동아리', '학회', '공연']),
+        hideHeader: true,
+        title: new Text(
+          "카테고리",
+          style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontWeight: FontWeight.bold),
+        ),
+        onConfirm: (Picker picker, List value) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddPosterPage(category: picker.getSelectedValues()[0])));
+          print(picker.getSelectedValues());
+        }).showDialog(context);
+  }
 }

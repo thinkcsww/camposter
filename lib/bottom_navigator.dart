@@ -35,7 +35,7 @@ class _NavigatorPageState extends State<NavigatorPage> {
 
     pages = [homePage, calendarPage, likePage, chatPage, myPage];
     pageTitles = ["Home", "Calendar", "Like", "Chat", "MyPage"];
-    currentPage = chatPage;
+    currentPage = homePage;
   }
 
   @override

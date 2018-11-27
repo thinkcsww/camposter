@@ -12,8 +12,8 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  int _messageNum;
-  String userId, userName;
+  int _messageNum = 0;
+  String userId = "", userName = "";
 
   @override
   void initState() {
@@ -25,51 +25,57 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.fromLTRB(30.0, 50.0, 0.0, 20.0),
-              child: Text(
-                "채팅",
-                style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: 28.0,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(30.0, 50.0, 10.0, 20.0),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.add,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/poster_creator_list');
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
+        _buildAppBar(context),
+        _buildBody(context),
+      ],
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.fromLTRB(30.0, 50.0, 0.0, 20.0),
+          child: Text(
+            "채팅",
+            style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 28.0,
+                fontWeight: FontWeight.bold),
+          ),
         ),
-        Flexible(child: _buildBody(context)),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.fromLTRB(30.0, 50.0, 10.0, 20.0),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.add,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/poster_creator_list');
+                  },
+                ),
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
 
   Widget _buildBody(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('ChatRooms').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
-        return _buildList(context, snapshot.data.documents);
-      },
+    return Flexible(
+      child: StreamBuilder<QuerySnapshot>(
+        stream: Firestore.instance.collection('ChatRooms').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return LinearProgressIndicator();
+          return _buildList(context, snapshot.data.documents);
+        },
+      ),
     );
   }
 
@@ -82,13 +88,10 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
     final recentMessage = RecentMessage.fromSnapshot(data);
-    final imageURL = recentMessage.imageURL;
-    final roomId = recentMessage.roomId;
-    final posterName = recentMessage.posterName;
-    final targetUserId = _getTargetUserId(roomId);
+    final targetUserId = _getTargetUserId(recentMessage.roomId);
 
     final chatRoomInfo = ChatRoomInfo(
-        roomId: roomId, imageURL: imageURL, targetUserId: targetUserId, posterName: posterName);
+        roomId: recentMessage.roomId, imageURL: recentMessage.imageURL, targetUserId: targetUserId, posterName: recentMessage.posterName);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _messageNum = int.parse(data[userId]);
