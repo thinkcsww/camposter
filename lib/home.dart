@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'detail.dart';
 
 class HomePage extends StatefulWidget {
-
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -26,8 +26,22 @@ class _HomePageState extends State<HomePage> {
   String queryPosterName, queryPosterCategory;
   String schoolName = "", userId = "", userName = "";
   List<String> categoryList = ['공모전', '취업', '신앙', '동아리', '학회', '공연'];
-  List<Color> categoryListColor = [camposterRed, camposterRed200, camposterRed200, camposterRed200, camposterRed200, camposterRed200];
-  List<Color> categoryListBorderColor = [camposterRed, Colors.white, Colors.white, Colors.white, Colors.white, Colors.white];
+  List<Color> categoryListColor = [
+    camposterRed,
+    camposterRed200,
+    camposterRed200,
+    camposterRed200,
+    camposterRed200,
+    camposterRed200
+  ];
+  List<Color> categoryListBorderColor = [
+    camposterRed,
+    Colors.white,
+    Colors.white,
+    Colors.white,
+    Colors.white,
+    Colors.white
+  ];
   List<String> suggestions = [];
   List<String> myTags = [];
   double spinKitState = 0.0;
@@ -45,14 +59,13 @@ class _HomePageState extends State<HomePage> {
     currentBody = _buildPopularBody(context);
 
     _getCurrentUserId(context).then((FirebaseUser user) {
-        _getSchoolNameFromDB(user).then((done) {
-          _getPosterListFromDB().then((done) {
-            _hideSpinKit();
-          });
+      _getSchoolNameFromDB(user).then((done) {
+        _getPosterListFromDB().then((done) {
+          _hideSpinKit();
         });
+      });
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +81,7 @@ class _HomePageState extends State<HomePage> {
         Opacity(
           opacity: spinKitState,
           child: SpinKitCircle(
-            color: Theme
-                .of(context)
-                .primaryColor,
+            color: Theme.of(context).primaryColor,
             size: 50.0,
           ),
         ),
@@ -133,18 +144,25 @@ class _HomePageState extends State<HomePage> {
                           },
                           itemBuilder: (context, item) {
                             return new Padding(
-                                padding: EdgeInsets.all(8.0), child: new Text(item, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),));
+                                padding: EdgeInsets.all(8.0),
+                                child: new Text(
+                                  item,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15.0),
+                                ));
                           },
                           itemSorter: (a, b) {
                             return a.compareTo(b);
                           },
                           itemFilter: (item, query) {
-                            return item.toLowerCase().startsWith(query.toLowerCase());
+                            return item
+                                .toLowerCase()
+                                .startsWith(query.toLowerCase());
                           },
                           decoration: InputDecoration(
                             border: InputBorder.none,
                           ),
-
                         ),
                       ),
                     ),
@@ -176,9 +194,7 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                   border: Border(
                       bottom: BorderSide(
-                          color: popularButtonBorderColor, width: 3.0)
-                  )
-              ),
+                          color: popularButtonBorderColor, width: 3.0))),
               child: Text('인기있는',
                   style: TextStyle(
                       color: popularButtonColor,
@@ -264,8 +280,8 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.only(bottom: 20.0),
                     decoration: BoxDecoration(
                         border: Border(
-                            bottom:
-                                BorderSide(color: camposterRed200, width: 2.0))),
+                            bottom: BorderSide(
+                                color: camposterRed200, width: 2.0))),
                     child: Text(
                       '모든 카테고리',
                       style: TextStyle(color: camposterRed200, fontSize: 16.0),
@@ -347,7 +363,14 @@ class _HomePageState extends State<HomePage> {
       height: 370.0,
       child: GestureDetector(
         onTap: () {
-          print('hi');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PosterDetailPage(
+                    poster: Poster.forDetailPoster(data),
+                  ),
+            ),
+          );
         },
         child: Card(
           child: Column(
@@ -416,8 +439,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  List<Widget> _buildCategoryHomeLeftViewCategories(
-      BuildContext context, List<String> categoryList, List<Color> categoryListColor) {
+  List<Widget> _buildCategoryHomeLeftViewCategories(BuildContext context,
+      List<String> categoryList, List<Color> categoryListColor) {
     List<Container> categories = [];
     for (var i = 0; i < categoryList.length; i++) {
       categories.add(
@@ -425,13 +448,9 @@ class _HomePageState extends State<HomePage> {
           margin: const EdgeInsets.only(bottom: 12.0),
           width: 100.0,
           decoration: BoxDecoration(
-            border: Border(
-              right: BorderSide(
-                color: categoryListBorderColor[i],
-                width: 2.0
-              )
-            )
-          ),
+              border: Border(
+                  right: BorderSide(
+                      color: categoryListBorderColor[i], width: 2.0))),
           child: GestureDetector(
             onTap: () {
               categoryToggle(i, categoryList.length);
@@ -482,7 +501,8 @@ class _HomePageState extends State<HomePage> {
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: _buildCategoryHomeLeftViewCategories(context, categoryList, categoryListColor),
+              children: _buildCategoryHomeLeftViewCategories(
+                  context, categoryList, categoryListColor),
             ),
           ],
         ),
@@ -505,6 +525,7 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+
   var emptyCard = Container(
     width: 300.0,
     height: 350.0,
@@ -529,8 +550,8 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   Text(
                     '해당 카테고리에 게시된 포스터가 없습니다.',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 12.0),
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
                   ),
                   SizedBox(
                     height: 8.0,
@@ -630,6 +651,7 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+
   ///
   /// 카테고리 탭 버튼을 눌렀을 때
   ///
@@ -656,7 +678,7 @@ class _HomePageState extends State<HomePage> {
       queryPosterCategory = categoryList[clickedCategory];
       categoryListColor[clickedCategory] = camposterRed;
       categoryListBorderColor[clickedCategory] = camposterRed;
-      for (var i = 0; i < length; i ++) {
+      for (var i = 0; i < length; i++) {
         if (clickedCategory != i) {
           categoryListColor[i] = camposterRed200;
           categoryListBorderColor[i] = Colors.white;
@@ -665,18 +687,24 @@ class _HomePageState extends State<HomePage> {
       currentBody = _buildCategoryBody(context);
     });
   }
+
   ///
   /// Search에 보여줄 Suggestion을 위해 모든 포스터 리스트를 DB에서 받아온다.
   ///
   Future _getPosterListFromDB() async {
-    await Firestore.instance.collection('Posters').getDocuments().then((QuerySnapshot snapshot) {
-      for (var i = 0; i < snapshot.documents.length; i ++) {
+    await Firestore.instance
+        .collection('Posters')
+        .getDocuments()
+        .then((QuerySnapshot snapshot) {
+      for (var i = 0; i < snapshot.documents.length; i++) {
         suggestions.add(snapshot.documents[i].data['posterName']);
       }
     });
   }
+
   Future _getSchoolNameFromDB(FirebaseUser user) async {
-    var result = await Firestore.instance.collection('Users').document(user.uid).get();
+    var result =
+        await Firestore.instance.collection('Users').document(user.uid).get();
     setState(() {
       schoolName = '#${result.data['school']}';
       print(schoolName);
@@ -684,6 +712,7 @@ class _HomePageState extends State<HomePage> {
       myTags.add(schoolName);
     });
   }
+
   Future<FirebaseUser> _getCurrentUserId(BuildContext context) async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     return user;
@@ -694,11 +723,10 @@ class _HomePageState extends State<HomePage> {
       spinKitState = 1.0;
     });
   }
+
   void _hideSpinKit() {
     setState(() {
       spinKitState = 0.0;
     });
   }
-
-
 }
