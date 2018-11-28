@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'constants.dart';
 
 class SignUpInfoPage extends StatefulWidget {
   @override
@@ -12,12 +14,32 @@ class SignUpInfoPage extends StatefulWidget {
 class _SignUpInfoPageState extends State<SignUpInfoPage> {
   final TextEditingController _schoolNameTextFieldController =
       TextEditingController();
+
   String userId;
+  String schoolName;
   double spinKitState = 0.0;
+  SharedPreferences prefs;
+
+  void getSchoolName() async {
+    prefs = await SharedPreferences.getInstance();
+    var schoolName = prefs.getString(SCHOOL_NAME);
+    print('debug get: $schoolName');
+    if (schoolName != null && schoolName != "") {
+      Navigator.popAndPushNamed(context, '/home');
+    }
+  }
+  void setSchoolName(String schoolName) async {
+    prefs = await SharedPreferences.getInstance();
+    prefs.setString(SCHOOL_NAME, schoolName);
+    print('debug $schoolName');
+  }
+
 
   @override
   void initState() {
     super.initState();
+    SharedPreferences.setMockInitialValues({});
+    getSchoolName();
     _getCurrentUserId(context);
   }
 
@@ -130,12 +152,13 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
   void _handleSubmitted(String schoolName) {
   _showSpinKit();
     if (schoolName != "") {
+      setSchoolName(schoolName);
       Firestore.instance.collection('Users').document(userId).setData({
         'school': schoolName
       }).then((finish) {
-        _hideSpinKit();
-        Fluttertoast.showToast(msg: '완료되었습니다.');
-        Navigator.pushNamed(context, '/home');
+          _hideSpinKit();
+          Fluttertoast.showToast(msg: '완료되었습니다.');
+          Navigator.pushNamed(context, '/home');
       });
     } else {
       _hideSpinKit();

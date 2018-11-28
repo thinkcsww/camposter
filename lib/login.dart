@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
 
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
       if (user != null) {
-        Navigator.pushNamed(context, '/home');
+        Navigator.popAndPushNamed(context, '/home');
       }
     });
   }
@@ -78,7 +78,8 @@ class _LoginPageState extends State<LoginPage> {
                         _showSpinKit();
                         _gSignIn().then((FirebaseUser user) {}).then((f) {
                           _hideSpinKit();
-                          Navigator.pushNamed(context, '/sign_up_info');
+                          Navigator.popAndPushNamed(context, '/sign_up_info');
+
                         });
                       }
                   ),

@@ -65,8 +65,8 @@ class _MyPageState extends State<MyPage> {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              Navigator.pushNamed(context, '/setting');
-//              _signOut();
+//              Navigator.pushNamed(context, '/setting');
+              _signOut();
             },
             color: Colors.white,
           ),

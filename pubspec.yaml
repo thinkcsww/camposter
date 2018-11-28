@@ -29,6 +29,7 @@ dependencies:
   uuid: ^1.0.3
   image_picker: ^0.4.10
   autocomplete_textfield: ^1.5.1
+  shared_preferences: ^0.4.3
   flutter_picker:
     git: git://github.com/yangyxd/flutter_picker.git
 
