@@ -25,7 +25,7 @@ dependencies:
   intl: ^0.15.7
   fluttertoast: ^2.1.0
   flutter_spinkit: ^3.0.0
-  firebase_storage: ^1.0.4
+  firebase_storage: ^1.0.3
   uuid: ^1.0.3
   image_picker: ^0.4.10
   autocomplete_textfield: ^1.5.1

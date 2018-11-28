@@ -1,3 +1,4 @@
+import 'package:camposter/bottom_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,20 +26,24 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
     var schoolName = prefs.getString(SCHOOL_NAME);
     print('debug get: $schoolName');
     if (schoolName != null && schoolName != "") {
-      Navigator.popAndPushNamed(context, '/home');
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => NavigatorPage(
+                    schoolName: schoolName,
+                  )));
     }
   }
+
   void setSchoolName(String schoolName) async {
     prefs = await SharedPreferences.getInstance();
     prefs.setString(SCHOOL_NAME, schoolName);
     print('debug $schoolName');
   }
 
-
   @override
   void initState() {
     super.initState();
-    SharedPreferences.setMockInitialValues({});
     getSchoolName();
     _getCurrentUserId(context);
   }
@@ -49,6 +54,7 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
       body: _buildBody(context),
     );
   }
+
   Widget _buildBody(BuildContext context) {
     return Stack(
       children: <Widget>[
@@ -82,24 +88,27 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
                   margin: const EdgeInsets.only(bottom: 12.0),
                   decoration: BoxDecoration(
                       border: Border(
-                        left: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 5.0),
-                        top:
-                        BorderSide(color: Theme.of(context).primaryColor),
-                        right: BorderSide(color: Theme.of(context).primaryColor),
-                        bottom: BorderSide(color: Theme.of(context).primaryColor),
-                      )
-                  ),
+                    left: BorderSide(
+                        color: Theme.of(context).primaryColor, width: 5.0),
+                    top: BorderSide(color: Theme.of(context).primaryColor),
+                    right: BorderSide(color: Theme.of(context).primaryColor),
+                    bottom: BorderSide(color: Theme.of(context).primaryColor),
+                  )),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 16.0),
                     child: TextField(
                       autofocus: true,
                       controller: _schoolNameTextFieldController,
-                      style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.bold, fontSize: 15.0),
+                      style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15.0),
                       decoration: InputDecoration(
                         hintText: '학교를 입력해주세요. ex: 한동대학교',
-                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
-                        border: UnderlineInputBorder(borderSide: BorderSide.none),
+                        focusedBorder:
+                            UnderlineInputBorder(borderSide: BorderSide.none),
+                        border:
+                            UnderlineInputBorder(borderSide: BorderSide.none),
                       ),
                     ),
                   ),
@@ -131,9 +140,7 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
         Opacity(
           opacity: spinKitState,
           child: SpinKitCircle(
-            color: Theme
-                .of(context)
-                .primaryColor,
+            color: Theme.of(context).primaryColor,
             size: 50.0,
           ),
         ),
@@ -150,15 +157,21 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
   }
 
   void _handleSubmitted(String schoolName) {
-  _showSpinKit();
+    _showSpinKit();
     if (schoolName != "") {
       setSchoolName(schoolName);
-      Firestore.instance.collection('Users').document(userId).setData({
-        'school': schoolName
-      }).then((finish) {
-          _hideSpinKit();
-          Fluttertoast.showToast(msg: '완료되었습니다.');
-          Navigator.pushNamed(context, '/home');
+      Firestore.instance
+          .collection('Users')
+          .document(userId)
+          .setData({'school': schoolName}).then((finish) {
+        _hideSpinKit();
+        Fluttertoast.showToast(msg: '완료되었습니다.');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NavigatorPage(
+                      schoolName: schoolName,
+                    )));
       });
     } else {
       _hideSpinKit();
@@ -171,6 +184,7 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
       spinKitState = 1.0;
     });
   }
+
   void _hideSpinKit() {
     setState(() {
       spinKitState = 0.0;

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'colors.dart';
 
@@ -57,8 +56,17 @@ class _SettingPageState extends State<SettingPage> {
             ),
             title: Container(
               margin: EdgeInsets.all(15.0),
-              child: Text('공지사항'),
+              child: Text(
+                '공지사항',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 15.0,
+                ),
+              ),
             ),
+            onTap: () {
+              Navigator.pushNamed(context, '/notice');
+            },
           ),
           _buildDivider(),
           ListTile(
@@ -69,8 +77,17 @@ class _SettingPageState extends State<SettingPage> {
             ),
             title: Container(
               margin: EdgeInsets.all(15.0),
-              child: Text('버전정보'),
+              child: Text(
+                '버전정보',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 15.0,
+                ),
+              ),
             ),
+            onTap: () {
+              Navigator.pushNamed(context, '/version');
+            },
           ),
           _buildBoldDivider(),
           _buildDivider(),
@@ -82,8 +99,17 @@ class _SettingPageState extends State<SettingPage> {
             ),
             title: Container(
               margin: EdgeInsets.all(15.0),
-              child: Text('개인'),
+              child: Text(
+                '개인',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 15.0,
+                ),
+              ),
             ),
+            onTap: () {
+              Navigator.pushNamed(context, '/person');
+            },
           ),
           _buildDivider(),
           ListTile(
@@ -94,23 +120,41 @@ class _SettingPageState extends State<SettingPage> {
             ),
             title: Container(
               margin: EdgeInsets.all(15.0),
-              child: Text('알림'),
+              child: Text(
+                '알림',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 15.0,
+                ),
+              ),
             ),
+            onTap: () {
+              Navigator.pushNamed(context, '/push');
+            },
           ),
           _buildDivider(),
           SizedBox(height: 180.0,),
           _buildBoldDivider(),
           _buildDivider(),
           ListTile(
-              leading: Icon(
-                Icons.description,
-                color: Theme.of(context).primaryColor,
-                size: 30.0,
+            leading: Icon(
+              Icons.description,
+              color: Theme.of(context).primaryColor,
+              size: 30.0,
+            ),
+            title: Container(
+              margin: EdgeInsets.all(15.0),
+              child: Text(
+                '서비스 이용약관',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 15.0,
+                ),
               ),
-              title: Container(
-                margin: EdgeInsets.all(15.0),
-                child: Text('서비스 이용약관'),
-              )
+            ),
+            onTap: () {
+              Navigator.pushNamed(context, '/service');
+            },
           ),
           _buildDivider(),
           ListTile(
@@ -121,9 +165,19 @@ class _SettingPageState extends State<SettingPage> {
             ),
             title: Container(
               margin: EdgeInsets.all(15.0),
-              child: Text('고객센터'),
+              child: Text(
+                '고객센터',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 15.0,
+                ),
+              ),
             ),
+            onTap: () {
+              Navigator.pushNamed(context, '/center');
+            },
           ),
+          _buildDivider(),
         ],
       ),
     );

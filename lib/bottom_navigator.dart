@@ -6,11 +6,17 @@ import 'calendar.dart';
 import 'home.dart';
 
 class NavigatorPage extends StatefulWidget {
+  String schoolName;
+  NavigatorPage({Key key, @required this.schoolName}) : super(key: key);
   @override
-  _NavigatorPageState createState() => _NavigatorPageState();
+  _NavigatorPageState createState() => _NavigatorPageState(schoolName: schoolName);
 }
 
 class _NavigatorPageState extends State<NavigatorPage> {
+
+  _NavigatorPageState({Key key, @required this.schoolName});
+
+  String schoolName;
   int currentTab = 0;
   ChatPage chatPage;
   LikePage likePage;
@@ -29,7 +35,7 @@ class _NavigatorPageState extends State<NavigatorPage> {
 
     chatPage = ChatPage();
     likePage = LikePage();
-    homePage = HomePage();
+    homePage = HomePage(schoolName: schoolName,);
     myPage = MyPage();
     calendarPage = CalendarPage();
 

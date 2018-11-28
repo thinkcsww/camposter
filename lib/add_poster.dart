@@ -1,3 +1,4 @@
+import 'package:camposter/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddPosterPage extends StatefulWidget {
   String category;
@@ -25,13 +27,17 @@ class _AddPosterPageState extends State<AddPosterPage> {
   final _posterNameController = TextEditingController();
   final _posterOrganizerController = TextEditingController();
   final _timeLocationController = TextEditingController();
+  final _tagController = TextEditingController();
 
   _AddPosterPageState({Key key, @required this.category});
+
+  SharedPreferences prefs;
 
   String category;
   String userId;
   File _imageFile;
   String imageURL;
+  String schoolName;
   FirebaseStorage storage = FirebaseStorage.instance;
   double spinKitState = 0.0;
 
@@ -39,6 +45,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
   void initState() {
     super.initState();
     _getCurrentUserId(context);
+    getSchoolName();
   }
 
   @override
@@ -81,18 +88,18 @@ class _AddPosterPageState extends State<AddPosterPage> {
               children: <Widget>[
                 Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0, left: 40.0),
-                      child: GestureDetector(
-                        onTap: () => showPickerDialog(context),
-                        child: Text(
-                  '#$category',
-                  style: TextStyle(
+                  padding: const EdgeInsets.only(top: 10.0, left: 40.0),
+                  child: GestureDetector(
+                    onTap: () => showPickerDialog(context),
+                    child: Text(
+                      '#$category',
+                      style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 22.0,
                           color: Theme.of(context).primaryColor),
-                ),
-                      ),
-                    )),
+                    ),
+                  ),
+                )),
                 IconButton(
                     icon: Icon(Icons.camera_alt),
                     onPressed: () {
@@ -136,6 +143,16 @@ class _AddPosterPageState extends State<AddPosterPage> {
                                 color: Theme.of(context).primaryColor))),
                     controller: _timeLocationController,
                   ),
+                  TextField(
+                    decoration: InputDecoration(
+                        hintText: '태그: #한동대#동아리#나야나',
+                        hintStyle:
+                            TextStyle(color: Theme.of(context).primaryColor),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor))),
+                    controller: _tagController,
+                  ),
                 ],
               ),
             )
@@ -172,13 +189,15 @@ class _AddPosterPageState extends State<AddPosterPage> {
     }
   }
 
-  Future<Null> _uploadFile(String uuid) async {
+  Future<String> _uploadFile(String uuid) async {
     StorageReference storageReference = storage.ref();
     final StorageReference imagesRef = storageReference.child('posters/$uuid');
 
     StorageUploadTask uploadTask = imagesRef.putFile(_imageFile);
 
-    imageURL = await (await uploadTask.onComplete).ref.getDownloadURL();
+    String imageURL = await (await uploadTask.onComplete).ref.getDownloadURL();
+
+    return imageURL;
   }
 
   void _getCurrentUserId(BuildContext context) {
@@ -192,19 +211,29 @@ class _AddPosterPageState extends State<AddPosterPage> {
   }
 
   void _handleSubmitted(
-      String name, String organizer, String timeLocation) {
+      String name, String organizer, String timeLocation, String tag) {
     _showSpinKit();
     if (name.isNotEmpty &&
         organizer.isNotEmpty &&
-        _imageFile != null) {
+        _imageFile != null &&
+        tag.isNotEmpty) {
       String uuid = Uuid().v1();
       var now = DateTime.now();
       var formatter = DateFormat.yMd().add_jm();
       var formattedTime = formatter.format(now).toString();
-      _uploadFile(uuid).then((f) {}).then((f) {
+      var tagSplitResultList = tag.split('#');
+      tagSplitResultList.removeAt(0);
+      Map<String, String> tagSplitResultMap = {};
+      for (var i = 0; i < tagSplitResultList.length; i++) {
+        tagSplitResultMap[tagSplitResultList[i]] = tagSplitResultList[i];
+      }
+
+      _uploadFile(uuid).then((f) {}).then((imageURL) {
+        print('debug $imageURL');
         Firestore.instance.collection('Posters').document(uuid).setData({
           'posterName': name,
           'organizer': organizer,
+          'school': schoolName,
           'creatorId': userId,
           'created': formattedTime,
           'modified': formattedTime,
@@ -212,6 +241,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
           'imagePath': 'images/$uuid',
           'category': category,
           'auth': false,
+          'tags' : tagSplitResultList
         }).then((f) {
           Firestore.instance
               .collection('Users')
@@ -224,6 +254,10 @@ class _AddPosterPageState extends State<AddPosterPage> {
             'imageURL': imageURL,
             'imagePath': 'images/$uuid',
             'category': category,
+          }).then((done) {
+
+            Firestore.instance.collection('Tags').document('Tags').setData(tagSplitResultMap, merge: true
+            );
           }).then((f) {
             _hideSpinKit();
             Fluttertoast.showToast(msg: '업로드 완료');
@@ -270,32 +304,38 @@ class _AddPosterPageState extends State<AddPosterPage> {
   }
 
   void alertDialog(BuildContext context) {
-    showDialog(context: context, builder: (BuildContext context) {
-      return CupertinoAlertDialog(
-        title: Text('알림'),
-        content: Text('정말 등록하시겠습니까?'),
-        actions: <Widget>[
-          CupertinoDialogAction(
-            child: Text('예'),
-            onPressed: () {
-              _handleSubmitted(
-                _posterNameController.text,
-                _posterOrganizerController.text,
-                _timeLocationController.text,
-              );
-              Navigator.pop(context);
-            },
-          ),
-          CupertinoDialogAction(
-            child: Text('아니오'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          )
-        ],
-      );
-    });
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text('알림'),
+            content: Text('정말 등록하시겠습니까?'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text('예'),
+                onPressed: () {
+                  _handleSubmitted(
+                      _posterNameController.text,
+                      _posterOrganizerController.text,
+                      _timeLocationController.text,
+                      _tagController.text);
+                  Navigator.pop(context);
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text('아니오'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
   }
 
-
+  void getSchoolName() async {
+    prefs = await SharedPreferences.getInstance();
+    schoolName = prefs.getString(SCHOOL_NAME);
+    print('add_poster page schoolname: $schoolName');
+  }
 }

@@ -1,4 +1,3 @@
-import 'package:camposter/constants.dart';
 import 'package:camposter/model/poster.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,15 +7,19 @@ import 'colors.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'detail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
+  final schoolName;
+
+  HomePage({Key key, @required this.schoolName}) : super(key: key);
+
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(schoolName: schoolName);
 }
 
 class _HomePageState extends State<HomePage> {
-  SharedPreferences prefs;
+  String schoolName;
+  _HomePageState({Key key, @required this.schoolName});
 
   final buttonActiveColor = camposterRed;
   final buttonDeactiveColor = camposterRed200;
@@ -28,13 +31,12 @@ class _HomePageState extends State<HomePage> {
       popularButtonColor,
       popularButtonBorderColor;
   Widget currentBody;
-
   Widget currentAutoTextField;
 
   int posterNumber = 0;
   String currentSearchMethod = "제목";
-  String queryPosterName, queryPosterCategory;
-  String schoolName = "한동대학교", userId = "", userName = "";
+  String queryPosterName, queryPosterCategory, queryTagName;
+  String  userId = "", userName = "";
   List<String> categoryList = ['공모전', '취업', '신앙', '동아리', '학회', '공연'];
   List<String> searchMethodList = ['제목', '태그'];
   List<Color> categoryListColor = [
@@ -54,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     Colors.white
   ];
   List<String> titleSuggestions = [];
-  List<String> tagSuggestions = ['제발', '얘도', '써줘제발'];
+  List<String> tagSuggestions = ['한동대'];
 
   List<String> myTags = [];
   double spinKitState = 0.0;
@@ -62,9 +64,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    SharedPreferences.setMockInitialValues({});
+    print('debug $schoolName');
     _showSpinKit();
-    _getSchoolNameFromSharedPreferences();
     queryPosterName = null;
     queryPosterCategory = null;
     categoryButtonColor = buttonDeactiveColor;
@@ -73,17 +74,20 @@ class _HomePageState extends State<HomePage> {
     popularButtonBorderColor = buttonActiveColor;
     currentBody = _buildPopularBody(context);
 
+
     _getCurrentUserId(context).then((FirebaseUser user) {
-      _getSchoolNameFromDB(user).then((done) {
         _getPosterListFromDB().then((done) {
-          _hideSpinKit();
-          setState(() {
-            currentAutoTextField = _buildTitleAutoCompleteTextField(context);
+          _getTagSuggestionsFromDB().then((done) {
+            _hideSpinKit();
+            setState(() {
+              currentAutoTextField = _buildTitleAutoCompleteTextField(context);
+            });
           });
         });
-      });
     });
   }
+
+
 
   Widget _buildTitleAutoCompleteTextField(BuildContext context) {
     return AutoCompleteTextField<String>(
@@ -96,19 +100,18 @@ class _HomePageState extends State<HomePage> {
       textInputAction: TextInputAction.go,
       textSubmitted: (item) {
         setState(() {
-          if (currentSearchMethod == "제목") {
 
             queryPosterName = item;
             currentBody = _buildPopularBody(context);
-          } else if (currentSearchMethod == "태그"){
-            if (myTags.length == 0) {
-              myTags.add(item);
-            } else {
-              myTags.removeAt(0);
-              myTags.add(item);
-            }
-            currentBody = _buildPopularBody(context);
-          };
+//          else if (currentSearchMethod == "태그"){
+//            if (myTags.length == 0) {
+//              myTags.add(item);
+//            } else {
+//              myTags.removeAt(0);
+//              myTags.add(item);
+//            }
+//            currentBody = _buildPopularBody(context);
+//          }
         });
       },
       itemBuilder: (context, item) {
@@ -141,24 +144,19 @@ class _HomePageState extends State<HomePage> {
       submitOnSuggestionTap: true,
       suggestions: tagSuggestions,
       textChanged: (item) {
-        queryPosterName = item;
+        queryTagName = item;
       },
       textInputAction: TextInputAction.go,
       textSubmitted: (item) {
         setState(() {
-          if (currentSearchMethod == "제목") {
-
-            queryPosterName = item;
-            currentBody = _buildPopularBody(context);
-          } else if (currentSearchMethod == "태그"){
-            if (myTags.length == 0) {
-              myTags.add(item);
-            } else {
-              myTags.removeAt(0);
-              myTags.add(item);
-            }
-            currentBody = _buildPopularBody(context);
-          };
+          queryTagName = item;
+          if (myTags.length == 0) {
+            myTags.add(item);
+          } else {
+            myTags.removeAt(0);
+            myTags.add(item);
+          }
+          currentBody = _buildPopularBody(context);
         });
       },
       itemBuilder: (context, item) {
@@ -325,6 +323,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+
   Widget _buildPopularBody(BuildContext context) {
     return Column(
       children: <Widget>[
@@ -419,12 +418,14 @@ class _HomePageState extends State<HomePage> {
             .collection('Posters')
             .where('auth', isEqualTo: true)
             .where('school', isEqualTo: schoolName)
+            .where('posterName', isEqualTo: queryPosterName)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) return Text('Error, please try again');
           if (!snapshot.hasData) return LinearProgressIndicator();
           if (snapshot.data.documents.length == 0) return emptyCard;
           posterNumber = snapshot.data.documents.length;
+          currentBody = _buildPopularBody(context);
           print(posterNumber);
           return _buildPopularList(context, snapshot.data.documents);
         },
@@ -434,6 +435,8 @@ class _HomePageState extends State<HomePage> {
         stream: Firestore.instance
             .collection('Posters')
             .where('auth', isEqualTo: true)
+            .where('school', isEqualTo: schoolName)
+            .where('tags', arrayContains: queryTagName)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) return Text('Error, please try again');
@@ -807,7 +810,7 @@ class _HomePageState extends State<HomePage> {
 
   List<Text> _buildMyTagList(List<String> myTagList) {
     List<Text> tagList = [
-      Text('#${schoolName}',
+      Text('#$schoolName',
           style: TextStyle(
               color: camposterRed,
               fontSize: 16.0,
@@ -829,6 +832,7 @@ class _HomePageState extends State<HomePage> {
   Future _getPosterListFromDB() async {
     await Firestore.instance
         .collection('Posters')
+        .where('school', isEqualTo: schoolName)
         .getDocuments()
         .then((QuerySnapshot snapshot) {
       for (var i = 0; i < snapshot.documents.length; i++) {
@@ -837,15 +841,16 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future _getSchoolNameFromDB(FirebaseUser user) async {
-    var result =
-        await Firestore.instance.collection('Users').document(user.uid).get();
-    setState(() {
-      schoolName = result.data['school'];
-      print(schoolName);
-      currentBody = _buildPopularBody(context);
+  Future _getTagSuggestionsFromDB() async {
+    await Firestore.instance
+        .collection('Tags').document('Tags').get().then((DocumentSnapshot snapshot) {
+      var keys = snapshot.data.keys.toList();
+      for (var i = 0; i < keys.length; i++) {
+        tagSuggestions.add(keys[i]);
+      }
     });
   }
+
 
   Future<FirebaseUser> _getCurrentUserId(BuildContext context) async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
@@ -892,11 +897,4 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _getSchoolNameFromSharedPreferences() async {
-    prefs = await SharedPreferences.getInstance();
-    setState(() {
-      schoolName = prefs.get(SCHOOL_NAME);
-    });
-
-  }
 }
