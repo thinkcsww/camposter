@@ -171,7 +171,9 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
             MaterialPageRoute(
                 builder: (context) => NavigatorPage(
                       schoolName: schoolName,
-                    )));
+                    ))).then((done) {
+                      Navigator.pop(context);
+        });
       });
     } else {
       _hideSpinKit();

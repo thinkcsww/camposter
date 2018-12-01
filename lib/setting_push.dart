@@ -122,7 +122,7 @@ class _SettingPushPageState extends State<SettingPushPage> {
           ),
           Switch(
             value: _isChatSwitch, onChanged: (bool value) {
-            onChangedNew(value);
+            onChangedChat(value);
           },
             activeColor: Theme.of(context).primaryColor,
           ),
@@ -146,7 +146,7 @@ class _SettingPushPageState extends State<SettingPushPage> {
           ),
           Switch(
             value: _isNoticeSwitch, onChanged: (bool value) {
-            onChangedNew(value);
+            onChangedNotice(value);
           },
             activeColor: Theme.of(context).primaryColor,
           ),
@@ -170,7 +170,7 @@ class _SettingPushPageState extends State<SettingPushPage> {
           ),
           Switch(
             value: _isLikeSwitch, onChanged: (bool value) {
-            onChangedNew(value);
+            onChangedLike(value);
           },
             activeColor: Theme.of(context).primaryColor,
           ),

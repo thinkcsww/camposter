@@ -551,6 +551,7 @@ class _HomePageState extends State<HomePage> {
     width: 300.0,
     height: 350.0,
     child: Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -624,11 +625,14 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               AspectRatio(
                 aspectRatio: 13 / 11,
-                child: Image.network(
-                  poster.imageURL,
-                  width: 500.0,
-                  height: 300.0,
-                  fit: BoxFit.fill,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+                  child: Image.network(
+                    poster.imageURL,
+                    width: 500.0,
+                    height: 300.0,
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
               Expanded(

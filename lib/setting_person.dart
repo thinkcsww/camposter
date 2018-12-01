@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'colors.dart';
 
 class SettingPersonPage extends StatefulWidget {
@@ -7,6 +10,14 @@ class SettingPersonPage extends StatefulWidget {
 }
 
 class _SettingPersonPageState extends State<SettingPersonPage> {
+  String userEmail = "";
+
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentUserId(context);
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -70,7 +81,7 @@ class _SettingPersonPageState extends State<SettingPersonPage> {
         Container(
           padding: EdgeInsets.only(left:15.0, bottom: 15.0),
           child: Text(
-            "21300013@handong.edu",
+            userEmail,
           ),
         ),
         _buildDivider(),
@@ -84,6 +95,9 @@ class _SettingPersonPageState extends State<SettingPersonPage> {
               color: Theme.of(context).primaryColor,
             ),
           ),
+          onTap: () {
+            _signOutAlertDialog(context);
+          },
         ),
         _buildDivider(),
         SizedBox(height: 100.0),
@@ -98,6 +112,48 @@ class _SettingPersonPageState extends State<SettingPersonPage> {
         ),
       ],
     );
+  }
+
+  void _signOutAlertDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text('알림'),
+            content: Text('로그아웃 하시겠습니까??'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text('예'),
+                onPressed: () {
+                  _signOut().then((done) {
+                    GoogleSignIn _googleSignIn = GoogleSignIn();
+                    _googleSignIn.signOut().then((done) {
+                      Navigator.pop(context);
+                      Navigator.popAndPushNamed(context, '/login');
+                    });
+                  });
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text('아니오'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
+  }
+
+  Future _signOut()  async{
+    await FirebaseAuth.instance.signOut();
+  }
+
+  Future _getCurrentUserId(BuildContext context) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    setState(() {
+      userEmail = user.email;
+    });
   }
 
   Widget _buildDivider() {
