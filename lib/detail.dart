@@ -80,7 +80,7 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 0.0),
                     child: new ClipRRect(
-                      borderRadius: new BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
                       child: Hero(
                         tag: poster.posterName,
                         child: Image.network(

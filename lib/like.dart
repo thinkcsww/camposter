@@ -39,15 +39,6 @@ class _LikePageState extends State<LikePage> {
         style: TextStyle(
             color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
       ),
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(
-            Icons.delete,
-            color: Theme.of(context).primaryColor,
-          ),
-          onPressed: () {},
-        )
-      ],
       centerTitle: true,
     );
   }
@@ -104,16 +95,23 @@ class _LikePageState extends State<LikePage> {
         );
       },
       child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             AspectRatio(
               aspectRatio: 12 / 11,
-              child: Image.network(
-                poster.imageURL,
-                width: 800.0,
-                height: 300.0,
-                fit: BoxFit.fill,
+              child: Hero(
+                tag: poster.posterName,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(12.0), topRight: Radius.circular(12.0)),
+                  child: Image.network(
+                    poster.imageURL,
+                    width: 800.0,
+                    height: 300.0,
+                    fit: BoxFit.fill,
+                  ),
+                ),
               ),
             ),
             Expanded(

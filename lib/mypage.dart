@@ -329,16 +329,21 @@ class _MyPageState extends State<MyPage> {
       width: 200.0,
       height: 220.0,
       child: Card(
+        elevation: 2.0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             AspectRatio(
               aspectRatio: 10 / 11,
-              child: Image.network(
-                poster.imageURL,
-                width: 800.0,
-                height: 300.0,
-                fit: BoxFit.fill,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: Image.network(
+                  poster.imageURL,
+                  width: 800.0,
+                  height: 300.0,
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
           ],
@@ -374,16 +379,20 @@ class _MyPageState extends State<MyPage> {
     margin: const EdgeInsets.symmetric(horizontal: 5.0),
     width: 200.0,
     child: Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           AspectRatio(
             aspectRatio: 10 / 11,
-            child: Image.asset(
-              'images/logo',
-              width: 800.0,
-              height: 300.0,
-              fit: BoxFit.fill,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Image.asset(
+                'images/logo',
+                width: 800.0,
+                height: 300.0,
+                fit: BoxFit.fill,
+              ),
             ),
           ),
         ],
