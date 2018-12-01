@@ -194,6 +194,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
     final StorageReference imagesRef = storageReference.child('posters/$uuid');
 
     StorageUploadTask uploadTask = imagesRef.putFile(_imageFile);
+    print(imagesRef.getDownloadURL());
 
     String imageURL = await (await uploadTask.onComplete).ref.getDownloadURL();
 

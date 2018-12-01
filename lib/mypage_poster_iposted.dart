@@ -183,7 +183,6 @@ class _MyPagePosterIPostedPageState extends State<MyPagePosterIPostedPage> {
         ),
         onConfirm: (Picker picker, List value) {
           Navigator.push(context, MaterialPageRoute(builder: (context) => AddPosterPage(category: picker.getSelectedValues()[0])));
-//          Navigator.pushNamed(context, '/add_poster');
           print(picker.getSelectedValues());
         }).showDialog(context);
   }

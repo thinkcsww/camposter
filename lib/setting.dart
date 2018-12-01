@@ -7,8 +7,8 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  final buttonActiveColor = camposterRed;
-  final buttonDeactiveColor = camposterRed200;
+  final buttonActiveColor = CamPosterRed;
+  final buttonDeactiveColor = CamPosterRed200;
   Color buttonColor;
 
   @override

@@ -21,8 +21,8 @@ class _HomePageState extends State<HomePage> {
   String schoolName;
   _HomePageState({Key key, @required this.schoolName});
 
-  final buttonActiveColor = camposterRed;
-  final buttonDeactiveColor = camposterRed200;
+  final buttonActiveColor = CamPosterRed;
+  final buttonDeactiveColor = CamPosterRed200;
   GlobalKey<AutoCompleteTextFieldState<String>> autoTextTitleFieldKey = new GlobalKey();
   GlobalKey<AutoCompleteTextFieldState<String>> autoTextTagFieldKey = new GlobalKey();
   bool categoryClicked = false;
@@ -40,15 +40,15 @@ class _HomePageState extends State<HomePage> {
   List<String> categoryList = ['공모전', '취업', '신앙', '동아리', '학회', '공연'];
   List<String> searchMethodList = ['제목', '태그'];
   List<Color> categoryListColor = [
-    camposterRed,
-    camposterRed200,
-    camposterRed200,
-    camposterRed200,
-    camposterRed200,
-    camposterRed200
+    CamPosterRed,
+    CamPosterRed200,
+    CamPosterRed200,
+    CamPosterRed200,
+    CamPosterRed200,
+    CamPosterRed200
   ];
   List<Color> categoryListBorderColor = [
-    camposterRed,
+    CamPosterRed,
     Colors.white,
     Colors.white,
     Colors.white,
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     Colors.white
   ];
   List<String> titleSuggestions = [];
-  List<String> tagSuggestions = ['한동대'];
+  List<String> tagSuggestions = [];
 
   List<String> myTags = [];
   double spinKitState = 0.0;
@@ -87,101 +87,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-
-
-  Widget _buildTitleAutoCompleteTextField(BuildContext context) {
-    return AutoCompleteTextField<String>(
-      key: autoTextTitleFieldKey,
-      submitOnSuggestionTap: true,
-      suggestions: titleSuggestions,
-      textChanged: (item) {
-        queryPosterName = item;
-      },
-      textInputAction: TextInputAction.go,
-      textSubmitted: (item) {
-        setState(() {
-
-            queryPosterName = item;
-            currentBody = _buildPopularBody(context);
-//          else if (currentSearchMethod == "태그"){
-//            if (myTags.length == 0) {
-//              myTags.add(item);
-//            } else {
-//              myTags.removeAt(0);
-//              myTags.add(item);
-//            }
-//            currentBody = _buildPopularBody(context);
-//          }
-        });
-      },
-      itemBuilder: (context, item) {
-        return new Padding(
-            padding: EdgeInsets.all(8.0),
-            child: new Text(
-              item,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.0),
-            ));
-      },
-      itemSorter: (a, b) {
-        return a.compareTo(b);
-      },
-      itemFilter: (item, query) {
-        return item
-            .toLowerCase()
-            .startsWith(query.toLowerCase());
-      },
-      decoration: InputDecoration(
-        border: InputBorder.none,
-      ),
-    );
-  }
-
-  Widget _buildTagAutoCompleteTextField(BuildContext context) {
-    return AutoCompleteTextField<String>(
-      key: autoTextTagFieldKey,
-      submitOnSuggestionTap: true,
-      suggestions: tagSuggestions,
-      textChanged: (item) {
-        queryTagName = item;
-      },
-      textInputAction: TextInputAction.go,
-      textSubmitted: (item) {
-        setState(() {
-          queryTagName = item;
-          if (myTags.length == 0) {
-            myTags.add(item);
-          } else {
-            myTags.removeAt(0);
-            myTags.add(item);
-          }
-          currentBody = _buildPopularBody(context);
-        });
-      },
-      itemBuilder: (context, item) {
-        return new Padding(
-            padding: EdgeInsets.all(8.0),
-            child: new Text(
-              item,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15.0),
-            ));
-      },
-      itemSorter: (a, b) {
-        return a.compareTo(b);
-      },
-      itemFilter: (item, query) {
-        return item
-            .toLowerCase()
-            .startsWith(query.toLowerCase());
-      },
-      decoration: InputDecoration(
-        border: InputBorder.none,
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -360,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                 Text(
                   '인기있는\n포스터',
                   style: TextStyle(
-                      color: camposterRed,
+                      color: CamPosterRed,
                       fontWeight: FontWeight.bold,
                       fontSize: 28.0),
                 )
@@ -375,10 +280,10 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                         border: Border(
                             bottom: BorderSide(
-                                color: camposterRed200, width: 2.0))),
+                                color: CamPosterRed200, width: 2.0))),
                     child: Text(
                       '모든 카테고리',
-                      style: TextStyle(color: camposterRed200, fontSize: 16.0),
+                      style: TextStyle(color: CamPosterRed200, fontSize: 16.0),
                     ),
                   )
                 ],
@@ -390,7 +295,7 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.only(top: 24.0),
                   child: Text('나의 학교',
                       style: TextStyle(
-                          color: camposterRed200,
+                          color: CamPosterRed200,
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold)),
                 ),
@@ -487,11 +392,14 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               AspectRatio(
                 aspectRatio: 13 / 11,
-                child: Image.network(
-                  poster.imageURL,
-                  width: 500.0,
-                  height: 300.0,
-                  fit: BoxFit.fill,
+                child: Hero(
+                  tag: poster.posterName,
+                  child: Image.network(
+                    poster.imageURL,
+                    width: 500.0,
+                    height: 300.0,
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
               Expanded(
@@ -595,13 +503,13 @@ class _HomePageState extends State<HomePage> {
               margin: const EdgeInsets.only(bottom: 20.0),
               decoration: BoxDecoration(
                   border: Border(
-                      bottom: BorderSide(color: camposterRed200, width: 2.0))),
+                      bottom: BorderSide(color: CamPosterRed200, width: 2.0))),
               child: Row(
                 children: <Widget>[
                   Text(
                     '카테고리\n포스터',
                     style: TextStyle(
-                        color: camposterRed,
+                        color: CamPosterRed,
                         fontWeight: FontWeight.bold,
                         fontSize: 28.0),
                   )
@@ -750,6 +658,110 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildTitleAutoCompleteTextField(BuildContext context) {
+    return AutoCompleteTextField<String>(
+      key: autoTextTitleFieldKey,
+      submitOnSuggestionTap: true,
+      suggestions: titleSuggestions,
+      textChanged: (item) {
+        queryPosterName = item;
+      },
+      itemSubmitted: (item) {
+        setState(() {
+
+          queryPosterName = item;
+          currentBody = _buildPopularBody(context);
+        });
+      },
+      textInputAction: TextInputAction.go,
+      textSubmitted: (item) {
+        setState(() {
+
+          queryPosterName = item;
+          currentBody = _buildPopularBody(context);
+        });
+      },
+      itemBuilder: (context, item) {
+        return new Padding(
+            padding: EdgeInsets.all(8.0),
+            child: new Text(
+              item,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15.0),
+            ));
+      },
+      itemSorter: (a, b) {
+        return a.compareTo(b);
+      },
+      itemFilter: (item, query) {
+        return item
+            .toLowerCase()
+            .startsWith(query.toLowerCase());
+      },
+      decoration: InputDecoration(
+        border: InputBorder.none,
+      ),
+    );
+  }
+
+  Widget _buildTagAutoCompleteTextField(BuildContext context) {
+    return AutoCompleteTextField<String>(
+      key: autoTextTagFieldKey,
+      submitOnSuggestionTap: true,
+      suggestions: tagSuggestions,
+      textChanged: (item) {
+        queryTagName = item;
+      },
+      itemSubmitted: (item) {
+        setState(() {
+          queryTagName = item;
+          if (myTags.length == 0) {
+            myTags.add(item);
+          } else {
+            myTags.removeAt(0);
+            myTags.add(item);
+          }
+          currentBody = _buildPopularBody(context);
+        });
+      },
+      textInputAction: TextInputAction.go,
+      textSubmitted: (item) {
+        setState(() {
+          queryTagName = item;
+          if (myTags.length == 0) {
+            myTags.add(item);
+          } else {
+            myTags.removeAt(0);
+            myTags.add(item);
+          }
+          currentBody = _buildPopularBody(context);
+        });
+      },
+      itemBuilder: (context, item) {
+        return new Padding(
+            padding: EdgeInsets.all(8.0),
+            child: new Text(
+              item,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15.0),
+            ));
+      },
+      itemSorter: (a, b) {
+        return a.compareTo(b);
+      },
+      itemFilter: (item, query) {
+        return item
+            .toLowerCase()
+            .startsWith(query.toLowerCase());
+      },
+      decoration: InputDecoration(
+        border: InputBorder.none,
+      ),
+    );
+  }
+
   ///
   /// 인기있는 탭을 눌렀을 때
   ///
@@ -792,11 +804,11 @@ class _HomePageState extends State<HomePage> {
   void categoryToggle(int clickedCategory, int length) {
     setState(() {
       queryPosterCategory = categoryList[clickedCategory];
-      categoryListColor[clickedCategory] = camposterRed;
-      categoryListBorderColor[clickedCategory] = camposterRed;
+      categoryListColor[clickedCategory] = CamPosterRed;
+      categoryListBorderColor[clickedCategory] = CamPosterRed;
       for (var i = 0; i < length; i++) {
         if (clickedCategory != i) {
-          categoryListColor[i] = camposterRed200;
+          categoryListColor[i] = CamPosterRed200;
           categoryListBorderColor[i] = Colors.white;
         }
       }
@@ -812,14 +824,14 @@ class _HomePageState extends State<HomePage> {
     List<Text> tagList = [
       Text('#$schoolName',
           style: TextStyle(
-              color: camposterRed,
+              color: CamPosterRed,
               fontSize: 16.0,
               fontWeight: FontWeight.bold)),
     ];
     for (var i = 1; i < myTagList.length + 1; i++) {
       tagList.add(Text('#${myTagList[i - 1]}',
           style: TextStyle(
-              color: camposterRed,
+              color: CamPosterRed,
               fontSize: 16.0,
               fontWeight: FontWeight.bold)));
     }

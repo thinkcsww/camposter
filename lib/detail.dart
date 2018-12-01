@@ -4,119 +4,158 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'colors.dart';
 
-
-
 class PosterDetailPage extends StatefulWidget {
   final poster;
+
   PosterDetailPage({Key key, this.poster}) : super(key: key);
+
   @override
-  _PosterDetailPageState createState() => _PosterDetailPageState(poster: this.poster);
+  _PosterDetailPageState createState() =>
+      _PosterDetailPageState(poster: this.poster);
 }
-
-
 
 class _PosterDetailPageState extends State<PosterDetailPage> {
   final poster;
+
   _PosterDetailPageState({Key key, this.poster});
-  final GlobalKey<ScaffoldState> _scaffoldKey = new
-  GlobalKey<ScaffoldState>();
+
   String userId = '';
+  bool _isLiked = false;
+
+  Future<void> getLiked(String userId) async {
+    print('before');
+    DocumentSnapshot value = await Firestore.instance
+        .collection('Users')
+        .document(userId)
+        .collection('liked_list')
+        .document(poster.posterId)
+        .get();
+    if (value.exists) {
+      setState(() {
+        _isLiked = true;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    FirebaseAuth.instance.onAuthStateChanged.listen((user) {
-      if(user != null) {
-        setState(() {
-          userId = user.uid;
-        });
-      }
-    });
 
+    _getCurrentUserId(context).then((FirebaseUser user) {
+      getLiked(user.uid);
+    });
   }
 
+  Future<FirebaseUser> _getCurrentUserId(BuildContext context) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    userId = user.uid;
+    return user;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-//        appBar: AppBar(
-//          centerTitle: true,
-//          leading: IconButton(
-//            icon: Icon(
-//              Icons.arrow_back,
-//              semanticLabel: 'back',
-//            ),
-//            onPressed: () => Navigator.pop(context),
-//          ),
-//          //title: Text('세부 정보'),
-//        ),
-      persistentFooterButtons:
-
-      <Widget>[
-        Container(
-          decoration: new BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            color: Colors.white,
-            border: Border.all(
-              color: Colors.grey[200],
-              width: 1.0,
-            ),
-          ),
-
-          child: Row(
-            children: <Widget>[
-              SizedBox(width: 10.0,),
-              new IconButton(icon: new Icon(Icons.chat), onPressed: null ),
-              SizedBox(width: 40.0,),
-              Builder(
-                builder: (context) => (
-                    IconButton(icon: new Icon(Icons.star,color: camposterRed,), onPressed: (){
-
-                      Firestore.instance.collection('Users').document(userId).collection('liked_list').document(poster.posterId).setData({
-                        'posterName' : poster.posterName,
-                      });
-                      final snackBar = SnackBar(content: Text('포스터가 리스트에 추가되었습니다!'));
-                      Scaffold.of(context).showSnackBar(snackBar);
-
-
-
-
-                    } )),
-              ),
-              SizedBox(width: 40.0,),
-              new IconButton(icon: new Icon(Icons.share), onPressed:null),
-              SizedBox(width: 10.0,),
-            ],
-          ),
-        ),
-
-        SizedBox(width: 40.0,),
-
-      ],
+      backgroundColor: Colors.white70,
       body: _buildBody(context),
-
     );
-
   }
 
   Widget _buildBody(BuildContext context) {
-    return  ListView(
-      children: [
+    return GestureDetector(
+      onTap: (){
+        Navigator.pop(context);
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(top: 70.0, left: 20.0, right: 20.0, bottom: 30.0),
+        child: Card(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0)
+          ),
+          elevation: 5.0,
+          child: Stack(
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 0.0),
+                    child: new ClipRRect(
+                      borderRadius: new BorderRadius.circular(20.0),
+                      child: Hero(
+                        tag: poster.posterName,
+                        child: Image.network(
+                          poster.imageURL,
+                          height: 450.0,
+                          width: 800.0,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            poster.posterName,
+                            style:
+                            TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+                          ),
+                          SizedBox(
+                            height: 8.0,
+                          ),
+                          Text(
+                            poster.organizer,
+                          ),
+                          Row(
+                            children: <Widget>[
 
-        Image.network( poster.imageURL,
-          fit: BoxFit.fill,
-          height: 400.0,
-          width: 600.0,
+
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  IconButton(icon: _isLiked? new Icon(Icons.star,color: CamPosterRed,): new Icon(Icons.star_border, color: CamPosterRed,), onPressed: (){
+                    Firestore.instance.collection('Users').document(userId).collection('liked_list').document(poster.posterId).get().then((value){
+
+                      if(value.exists){
+                        Firestore.instance.collection('Users').document(userId).collection('liked_list').document(poster.posterId).delete();
+                        setState(() {
+                          _isLiked = false;
+                        });
+
+                      }
+
+                      else if(!value.exists){
+                        Firestore.instance.collection('Users').document(userId).collection('liked_list').document(poster.posterId).setData({
+                          'posterName' : poster.posterName,
+                          'imageURL'   : poster.imageURL,
+                          'organizer'  : poster.organizer,
+                          'posterId'   : poster.posterId,
+                          'creatorId'  : poster.creatorId,
+                        });
+                        setState(() {
+                          _isLiked = true;
+                        });
+                      }
+                    });
+                  } ),
+                ],
+              )
+            ],
+          ),
         ),
-
-      ],
-
+      ),
     );
-
-
-
   }
-
-
 }

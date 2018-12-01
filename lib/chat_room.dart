@@ -1,5 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'model/recent_message.dart';
 import 'model/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,7 +9,6 @@ import 'model/chat_room_info.dart';
 
 class ChatRoomPage extends StatefulWidget {
   final ChatRoomInfo chatRoomInfo;
-
 
   ChatRoomPage({Key key, @required this.chatRoomInfo}) : super(key: key);
 
@@ -40,21 +39,14 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
-        backgroundColor: Theme
-            .of(context)
-            .scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         iconTheme: IconThemeData(
-          color: Theme
-              .of(context)
-              .primaryColor,
+          color: Theme.of(context).primaryColor,
         ),
         title: Text(
           chatRoomInfo.posterName,
           textAlign: TextAlign.center,
-          style: TextStyle(color: Theme
-              .of(context)
-              .primaryColor),
+          style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         centerTitle: true,
         elevation: 1.0,
@@ -70,9 +62,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         icon: Icon(
           Icons.search,
           semanticLabel: 'search',
-          color: Theme
-              .of(context)
-              .primaryColor,
+          color: Theme.of(context).primaryColor,
         ),
         onPressed: () {},
       ),
@@ -80,15 +70,32 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         icon: Icon(
           Icons.delete,
           semanticLabel: 'delete',
-          color: Theme
-              .of(context)
-              .primaryColor,
+          color: Theme.of(context).primaryColor,
         ),
-        onPressed: () {},
+        onPressed: () async {
+          QuerySnapshot querySnapshot = await Firestore.instance
+              .collection('ChatRooms')
+              .document(chatRoomInfo.roomId)
+              .collection('Message')
+              .getDocuments();
+          List list = querySnapshot.documents;
+          leaveAlertDialog(context, list);
+        },
       )
     ];
 
     return iconButtons;
+  }
+
+  Future _leaveRoom(List messages) async {
+    messages.forEach((snapshot) {
+      Firestore.instance
+          .collection('ChatRooms')
+          .document(chatRoomInfo.roomId)
+          .collection('Message')
+          .document(snapshot.documentID)
+          .delete();
+    });
   }
 
   Widget _buildBody(BuildContext context) {
@@ -104,13 +111,58 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     );
   }
 
-  Future<DocumentSnapshot> getMessageNum() async {
-    DocumentSnapshot snapshot = await Firestore.instance
-        .collection('ChatRooms')
-        .document(chatRoomInfo.roomId)
-        .get();
-    var data = snapshot[userId];
-    print(data);
+
+  void leaveAlertDialog(BuildContext context, List list) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text('알림'),
+            content: Text('정말 나가시겠습니까?'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text('예'),
+                onPressed: () {
+                  //메시지 지우고
+                  _leaveRoom(list).then((done) {
+                    //내 채팅방 지우고
+                    Firestore.instance
+                        .collection('Users')
+                        .document(userId)
+                        .collection('ChatList')
+                        .document(chatRoomInfo.roomId)
+                        .delete()
+                        .then((done) {
+                          // 상대방에게 방 없어졌다는 것을 알리
+                      Firestore.instance
+                          .collection('Users')
+                          .document(chatRoomInfo.targetUserId)
+                          .collection('ChatList')
+                          .document(chatRoomInfo.roomId).updateData({
+                        chatRoomInfo.roomId : false
+                      })
+                          .then((done) {
+                        Navigator.pop(context);
+                      });
+                    });
+                  });
+
+                  Navigator.pop(context);
+                  // 상대에게 있는 채팅방 정보 지우고
+
+                  Navigator.pop(context);
+                  // 나에게 있는 채팅방 정보 지우기
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text('아니오'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
   }
 
   Widget _buildStreamBuilderForListView(BuildContext context) {
@@ -120,33 +172,32 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           .document(chatRoomInfo.roomId)
           .collection('Message')
           .snapshots(),
-
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-        getMessageNum();
         _targetMessageNum = 0;
         for (var message in snapshot.data.documents) {
           if (message['flag'] == 'false' && message['userId'] != userId) {
             message.reference.updateData({'flag': 'true'});
-          } else
-          if (message['flag'] == 'false' && message['userId'] == userId) {
+          } else if (message['flag'] == 'false' &&
+              message['userId'] == userId) {
             _targetMessageNum++;
           }
         }
 
-////        mZJddRzeuqfa5g4QLNcuC2YTpiK2
-//
         print(chatRoomInfo.targetUserId);
         Firestore.instance
-            .collection('ChatRooms')
+            .collection('Users')
+            .document(userId)
+            .collection('ChatList')
             .document(chatRoomInfo.roomId)
-            .updateData(
-            {userId: '0'});
+            .updateData({userId: '0'});
         Firestore.instance
-            .collection('ChatRooms')
+            .collection('Users')
+            .document(chatRoomInfo.targetUserId)
+            .collection('ChatList')
             .document(chatRoomInfo.roomId)
             .updateData(
-            {chatRoomInfo.targetUserId: _targetMessageNum.toString()});
+                {chatRoomInfo.targetUserId: _targetMessageNum.toString()});
 
         return _buildList(context, snapshot.data.documents);
       },
@@ -161,7 +212,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       child: ListView(
         controller: _messageListViewScrollController,
         children:
-        snapshot.map((data) => _buildListItem(context, data)).toList(),
+            snapshot.map((data) => _buildListItem(context, data)).toList(),
       ),
     );
   }
@@ -203,9 +254,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                           Text(
                             message.userName,
                             style: TextStyle(
-                              color: Theme
-                                  .of(context)
-                                  .primaryColor,
+                              color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -313,9 +362,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   Widget _buildTextComposer() {
     return new IconTheme(
-      data: IconThemeData(color: Theme
-          .of(context)
-          .accentColor),
+      data: IconThemeData(color: Theme.of(context).accentColor),
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 8.0),
         child: Row(
@@ -330,7 +377,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 },
                 onSubmitted: _handleSubmitted,
                 decoration:
-                InputDecoration.collapsed(hintText: 'Send a Message'),
+                    InputDecoration.collapsed(hintText: 'Send a Message'),
               ),
             ),
             Container(
@@ -357,12 +404,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       _isComposing = false;
     });
 
-
     var now = DateTime.now();
-    String timeStamp = DateTime
-        .now()
-        .millisecondsSinceEpoch
-        .toString();
+    String timeStamp = DateTime.now().millisecondsSinceEpoch.toString();
     initializeDateFormatting('ko_KR');
     var formatter = DateFormat('a h:mm', 'ko');
     var formattedTime = formatter.format(now);
@@ -390,13 +433,26 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         .document(timeStamp)
         .setData(messageMap);
 
-    //채팅방 리스트에 보여주기 위해 쓰는 것
-    Firestore.instance.collection('ChatRooms')
+    //나의 채팅방 리스트에 보여주기 위해 쓰는 것
+    Firestore.instance
+        .collection('Users')
+        .document(userId)
+        .collection('ChatList')
         .document(chatRoomInfo.roomId)
         .updateData({
-          'recentMessage' : message.message,
-          'recentMessageTime' : message.messageTime,
+      'recentMessage': message.message,
+      'recentMessageTime': message.messageTime,
+    });
+
+    //상대방 채팅방 리스트에 보여주기 위해 쓰는 것
+    Firestore.instance
+        .collection('Users')
+        .document(chatRoomInfo.targetUserId)
+        .collection('ChatList')
+        .document(chatRoomInfo.roomId)
+        .updateData({
+      'recentMessage': message.message,
+      'recentMessageTime': message.messageTime,
     });
   }
-
 }

@@ -1,9 +1,9 @@
+import 'package:camposter/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,6 +11,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  SharedPreferences prefs;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -30,13 +31,21 @@ class _LoginPageState extends State<LoginPage> {
     return user;
   }
 
+  Future setUserId(FirebaseUser user) async {
+    prefs = await SharedPreferences.getInstance();
+    prefs.setString(USER_ID, user.uid);
+    print('debug ${user.uid}');
+  }
+
   @override
   void initState() {
     super.initState();
 
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
       if (user != null) {
-        Navigator.popAndPushNamed(context, '/sign_up_info');
+        setUserId(user).then((done) {
+          Navigator.popAndPushNamed(context, '/sign_up_info');
+        });
       }
     });
   }

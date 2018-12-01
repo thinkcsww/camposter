@@ -1,4 +1,3 @@
-import 'package:camposter/home.dart';
 import 'package:camposter/setting_center.dart';
 import 'package:camposter/setting_notice.dart';
 import 'package:camposter/setting_person.dart';
@@ -15,6 +14,7 @@ import 'signup_info.dart';
 import 'mypage_poster_iposted.dart';
 import 'add_poster.dart';
 import 'setting.dart';
+import 'edit_alarm_tag.dart';
 
 class CamposterApp extends StatelessWidget {
 
@@ -44,6 +44,7 @@ class CamposterApp extends StatelessWidget {
         '/push': (context) => SettingPushPage(),
         '/service': (context) => SettingServicePage(),
         '/center': (context) => SettingCenterPage(),
+        '/edit_tag' : (context) => EditAlarmTagPage(),
 
       },
     );
@@ -62,9 +63,9 @@ class CamposterApp extends StatelessWidget {
 ThemeData _buildCamposterTheme() {
   final ThemeData base = ThemeData.light();
   return base.copyWith(
-    accentColor: camposterRed,
-    primaryColor: camposterRed,
-    scaffoldBackgroundColor: camposterBackgroundWhite,
+    accentColor: CamPosterRed,
+    primaryColor: CamPosterRed,
+    scaffoldBackgroundColor: CamPosterBackgroundWhite,
   );
 }
 
