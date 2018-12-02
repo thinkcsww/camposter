@@ -14,10 +14,12 @@ class Poster{
       : assert(snapshot['posterName'] != null),
         posterName = snapshot['posterName'];
 
-  Poster.forCreatorList(DocumentSnapshot snapshot, { this.school, this.posterId, this.category, this.organizer})
+  Poster.forCreatorList(DocumentSnapshot snapshot, { this.school, this.posterId, this.category})
       : assert(snapshot['creatorId'] != null),
         assert(snapshot['imageURL'] != null),
         assert(snapshot['posterName'] != null),
+        assert(snapshot['organizer'] != null),
+        organizer = snapshot['organizer'],
         creatorId = snapshot['creatorId'],
         imageURL = snapshot['imageURL'],
         posterName = snapshot['posterName'];

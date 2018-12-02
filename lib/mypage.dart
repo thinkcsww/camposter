@@ -70,14 +70,12 @@ class _MyPageState extends State<MyPage> {
       leading: Container(
 
       ),
-      title: Container(
-        padding: EdgeInsets.only(left: 10.0),
-        child: Text(
-          "마이 페이지",
-          style: TextStyle(
-            color: CamPosterWhite,
-            fontWeight: FontWeight.bold,
-          ),
+
+      title: Text(
+        "마이 페이지",
+        style: TextStyle(
+          color: CamPosterWhite,
+          fontWeight: FontWeight.bold,
         ),
       ),
       actions: <Widget>[

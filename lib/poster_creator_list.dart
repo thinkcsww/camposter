@@ -56,6 +56,7 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
 
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return ListView(
+
         padding: const EdgeInsets.symmetric(horizontal: 0.0),
         children:
             snapshot.map((data) => _buildListItem(context, data)).toList());
@@ -70,30 +71,42 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
     return Padding(
       key: ValueKey(data.documentID),
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: ListTile(
-        title: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Text(
-            posterName,
-            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+      child: Container(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(width: 0.2, color: Colors.grey)
+          )
+        ),
+        child: ListTile(
+          title: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              posterName,
+              style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 16.0, fontWeight: FontWeight.bold),
+            ),
           ),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+            child: Text(poster.organizer),
+          ),
+          leading: Image.network(
+            poster.imageURL,
+            width: 50.0,
+            height: 50.0,
+            fit: BoxFit.fill,
+          ),
+          onTap: () {
+            final roomId = '$userId$targetUserId';
+            final chatRoomInfo = ChatRoomInfo(
+                roomId: roomId,
+                imageURL: imageURL,
+                targetUserId: targetUserId,
+                posterName: posterName);
+            _showAlertDialog(context, chatRoomInfo)
+                .then((finish) => Navigator.pop(context));
+          },
         ),
-        leading: Image.network(
-          poster.imageURL,
-          width: 50.0,
-          height: 50.0,
-          fit: BoxFit.fill,
-        ),
-        onTap: () {
-          final roomId = '$userId$targetUserId';
-          final chatRoomInfo = ChatRoomInfo(
-              roomId: roomId,
-              imageURL: imageURL,
-              targetUserId: targetUserId,
-              posterName: posterName);
-          _showAlertDialog(context, chatRoomInfo)
-              .then((finish) => Navigator.pop(context));
-        },
       ),
     );
   }
