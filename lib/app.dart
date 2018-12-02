@@ -1,3 +1,9 @@
+import 'package:camposter/setting_center.dart';
+import 'package:camposter/setting_notice.dart';
+import 'package:camposter/setting_person.dart';
+import 'package:camposter/setting_push.dart';
+import 'package:camposter/setting_service.dart';
+import 'package:camposter/setting_version.dart';
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'bottom_navigator.dart';
@@ -8,6 +14,7 @@ import 'signup_info.dart';
 import 'mypage_poster_iposted.dart';
 import 'add_poster.dart';
 import 'setting.dart';
+import 'edit_alarm_tag.dart';
 
 class CamposterApp extends StatelessWidget {
 
@@ -30,6 +37,14 @@ class CamposterApp extends StatelessWidget {
         '/mypage_poster_iposted' : (context) => MyPagePosterIPostedPage(),
         '/add_poster' : (context) => AddPosterPage(),
         '/setting' : (context) => SettingPage(),
+        '/navigator' : (context) => NavigatorPage(),
+        '/notice': (context) => SettingNoticePage(),
+        '/version': (context) => SettingVersionPage(),
+        '/person': (context) => SettingPersonPage(),
+        '/push': (context) => SettingPushPage(),
+        '/service': (context) => SettingServicePage(),
+        '/center': (context) => SettingCenterPage(),
+        '/edit_tag' : (context) => EditAlarmTagPage(),
 
       },
     );
@@ -48,9 +63,9 @@ class CamposterApp extends StatelessWidget {
 ThemeData _buildCamposterTheme() {
   final ThemeData base = ThemeData.light();
   return base.copyWith(
-    accentColor: camposterRed,
-    primaryColor: camposterRed,
-    scaffoldBackgroundColor: camposterBackgroundWhite,
+    accentColor: CamPosterRed,
+    primaryColor: CamPosterRed,
+    scaffoldBackgroundColor: CamPosterBackgroundWhite,
   );
 }
 

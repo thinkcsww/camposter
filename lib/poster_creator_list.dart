@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:camposter/chat_room.dart';
 import 'package:camposter/model/chat_room_info.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +115,9 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
                   var formatter = DateFormat('a h:mm', 'ko');
                   var formattedTime = formatter.format(now);
                   Firestore.instance
-                      .collection('ChatRooms')
+                      .collection('Users')
+                      .document(userId)
+                      .collection('ChatList')
                       .document(chatRoomInfo.roomId)
                       .setData({
                     chatRoomInfo.targetUserId: '0',
@@ -123,30 +127,32 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
                     'recentMessageTime': formattedTime,
                     'imageURL': chatRoomInfo.imageURL,
                     'roomId': chatRoomInfo.roomId,
+                    chatRoomInfo.roomId: true
                   }).then((finish) {
                     Firestore.instance
                         .collection('Users')
-                        .document(userId)
+                        .document(chatRoomInfo.targetUserId)
                         .collection('ChatList')
-                        .document('ChatList')
-                        .setData({chatRoomInfo.roomId: true}, merge: true).then(
-                            (finish) {
-                      Firestore.instance
-                          .collection('Users')
-                          .document(chatRoomInfo.targetUserId)
-                          .collection('ChatList')
-                          .document('ChatList')
-                          .setData({chatRoomInfo.roomId: true}, merge: true);
+                        .document(chatRoomInfo.roomId)
+                        .setData({
+                      chatRoomInfo.targetUserId: '0',
+                      userId: '0',
+                      'posterName': chatRoomInfo.posterName,
+                      'recentMessage': '새로운 대화가 생성되었습니다.',
+                      'recentMessageTime': formattedTime,
+                      'imageURL': chatRoomInfo.imageURL,
+                      'roomId': chatRoomInfo.roomId,
+                      chatRoomInfo.roomId: true
+                    });
 
-                      Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ChatRoomPage(chatRoomInfo: chatRoomInfo)))
-                          .then((finish) {
-                        Fluttertoast.showToast(msg: '새로운 채팅 생성 완료');
-                        Navigator.pop(context);
-                      });
+                    Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ChatRoomPage(chatRoomInfo: chatRoomInfo)))
+                        .then((finish) {
+                      Fluttertoast.showToast(msg: '새로운 채팅 생성 완료');
+                      Navigator.pop(context);
                     });
                   });
                 },

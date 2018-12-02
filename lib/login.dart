@@ -1,9 +1,11 @@
+import 'dart:async';
+
+import 'package:camposter/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,8 +13,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  SharedPreferences prefs;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
 
   double spinKitState = 0.0;
 
@@ -30,13 +34,21 @@ class _LoginPageState extends State<LoginPage> {
     return user;
   }
 
+  Future setUserId(FirebaseUser user) async {
+    prefs = await SharedPreferences.getInstance();
+    prefs.setString(USER_ID, user.uid);
+    print('debug ${user.uid}');
+  }
+
   @override
   void initState() {
     super.initState();
 
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
       if (user != null) {
-        Navigator.pushNamed(context, '/home');
+        setUserId(user).then((done) {
+          Navigator.popAndPushNamed(context, '/sign_up_info');
+        });
       }
     });
   }
@@ -55,32 +67,35 @@ class _LoginPageState extends State<LoginPage> {
           padding: EdgeInsets.symmetric(horizontal: 24.0),
           children: <Widget>[
             SizedBox(
-              height: 100.0,
+              height: 150.0,
             ),
             Image.asset(
               'images/logo.png',
               width: 300.0,
-              height: 150.0,
+              height: 250.0,
               fit: BoxFit.fill,
             ),
             SizedBox(
-              height: 100.0,
+              height: 80.0,
             ),
             Container(
               child: Column(
                 children: <Widget>[
-                  FlatButton(
-                      child: Image.asset(
-                        "images/google.png",
-                        fit: BoxFit.fill,
-                      ),
-                      onPressed: () {
-                        _showSpinKit();
-                        _gSignIn().then((FirebaseUser user) {}).then((f) {
-                          _hideSpinKit();
-                          Navigator.pushNamed(context, '/sign_up_info');
-                        });
-                      }
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: FlatButton(
+                        child: Image.asset(
+                          "images/google.png",
+                          fit: BoxFit.fill,
+                        ),
+                        onPressed: () {
+                          _showSpinKit();
+                          _gSignIn().then((FirebaseUser user) {}).then((f) {
+                            _hideSpinKit();
+                            Navigator.popAndPushNamed(context, '/sign_up_info');
+                          });
+                        }
+                    ),
                   ),
                   Opacity(
                     opacity: spinKitState,

@@ -1,8 +1,11 @@
+import 'package:camposter/bottom_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'constants.dart';
 
 class SignUpInfoPage extends StatefulWidget {
   @override
@@ -12,12 +15,36 @@ class SignUpInfoPage extends StatefulWidget {
 class _SignUpInfoPageState extends State<SignUpInfoPage> {
   final TextEditingController _schoolNameTextFieldController =
       TextEditingController();
+
   String userId;
+  String schoolName;
   double spinKitState = 0.0;
+  SharedPreferences prefs;
+
+  void getSchoolName() async {
+    prefs = await SharedPreferences.getInstance();
+    var schoolName = prefs.getString(SCHOOL_NAME);
+    print('debug get: $schoolName');
+    if (schoolName != null && schoolName != "") {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => NavigatorPage(
+                    schoolName: schoolName,
+                  )));
+    }
+  }
+
+  void setSchoolName(String schoolName) async {
+    prefs = await SharedPreferences.getInstance();
+    prefs.setString(SCHOOL_NAME, schoolName);
+    print('debug $schoolName');
+  }
 
   @override
   void initState() {
     super.initState();
+    getSchoolName();
     _getCurrentUserId(context);
   }
 
@@ -27,6 +54,7 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
       body: _buildBody(context),
     );
   }
+
   Widget _buildBody(BuildContext context) {
     return Stack(
       children: <Widget>[
@@ -34,15 +62,15 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
           padding: EdgeInsets.symmetric(horizontal: 48.0),
           children: <Widget>[
             SizedBox(
-              height: 50.0,
+              height: 25.0,
             ),
             Image.asset(
-              'images/camposter.png',
-              width: 50.0,
-              height: 50.0,
+              'images/logo.png',
+              width: 300.0,
+              height: 250.0,
             ),
             SizedBox(
-              height: 75.0,
+              height: 25.0,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,30 +88,33 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
                   margin: const EdgeInsets.only(bottom: 12.0),
                   decoration: BoxDecoration(
                       border: Border(
-                        left: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 5.0),
-                        top:
-                        BorderSide(color: Theme.of(context).primaryColor),
-                        right: BorderSide(color: Theme.of(context).primaryColor),
-                        bottom: BorderSide(color: Theme.of(context).primaryColor),
-                      )
-                  ),
+                    left: BorderSide(color: Theme.of(context).primaryColor, width: 5.0),
+                    top: BorderSide(color: Theme.of(context).primaryColor),
+                    right: BorderSide(color: Theme.of(context).primaryColor),
+                    bottom: BorderSide(color: Theme.of(context).primaryColor),
+                  )),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 16.0),
                     child: TextField(
                       autofocus: true,
                       controller: _schoolNameTextFieldController,
-                      style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.bold, fontSize: 15.0),
+                      style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15.0),
                       decoration: InputDecoration(
                         hintText: '학교를 입력해주세요. ex: 한동대학교',
-                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
-                        border: UnderlineInputBorder(borderSide: BorderSide.none),
+                        focusedBorder:
+                            UnderlineInputBorder(borderSide: BorderSide.none),
+                        border:
+                            UnderlineInputBorder(borderSide: BorderSide.none),
                       ),
                     ),
                   ),
                 )
               ],
             ),
+            SizedBox(height: 50.0),
             Container(
               child: Column(
                 children: <Widget>[
@@ -109,9 +140,7 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
         Opacity(
           opacity: spinKitState,
           child: SpinKitCircle(
-            color: Theme
-                .of(context)
-                .primaryColor,
+            color: Theme.of(context).primaryColor,
             size: 50.0,
           ),
         ),
@@ -128,14 +157,23 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
   }
 
   void _handleSubmitted(String schoolName) {
-  _showSpinKit();
+    _showSpinKit();
     if (schoolName != "") {
-      Firestore.instance.collection('Users').document(userId).setData({
-        'school': schoolName
-      }).then((finish) {
+      setSchoolName(schoolName);
+      Firestore.instance
+          .collection('Users')
+          .document(userId)
+          .setData({'school': schoolName}).then((finish) {
         _hideSpinKit();
         Fluttertoast.showToast(msg: '완료되었습니다.');
-        Navigator.pushNamed(context, '/home');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NavigatorPage(
+                      schoolName: schoolName,
+                    ))).then((done) {
+                      Navigator.pop(context);
+        });
       });
     } else {
       _hideSpinKit();
@@ -148,6 +186,7 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
       spinKitState = 1.0;
     });
   }
+
   void _hideSpinKit() {
     setState(() {
       spinKitState = 0.0;

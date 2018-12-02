@@ -25,19 +25,19 @@ dependencies:
   intl: ^0.15.7
   fluttertoast: ^2.1.0
   flutter_spinkit: ^3.0.0
-  firebase_storage: ^1.0.4
+  firebase_storage: ^1.0.3
   uuid: ^1.0.3
   image_picker: ^0.4.10
   autocomplete_textfield: ^1.5.1
+  shared_preferences: ^0.4.3
   flutter_picker:
     git: git://github.com/yangyxd/flutter_picker.git
+  flutter_calendar: ^0.0.1
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

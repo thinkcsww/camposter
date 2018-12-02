@@ -12,7 +12,6 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  int _messageNum = 0;
   String userId = "", userName = "";
 
   @override
@@ -68,9 +67,16 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _buildBody(BuildContext context) {
+    if (userId == "") {
+      return LinearProgressIndicator();
+    }
     return Flexible(
       child: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('ChatRooms').snapshots(),
+        stream: Firestore.instance
+            .collection('Users')
+            .document(userId)
+            .collection('ChatList')
+            .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
           return _buildList(context, snapshot.data.documents);
@@ -89,14 +95,60 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
     final recentMessage = RecentMessage.fromSnapshot(data);
     final targetUserId = _getTargetUserId(recentMessage.roomId);
-
     final chatRoomInfo = ChatRoomInfo(
-        roomId: recentMessage.roomId, imageURL: recentMessage.imageURL, targetUserId: targetUserId, posterName: recentMessage.posterName);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _messageNum = int.parse(data[userId]);
-      });
-    });
+        roomId: recentMessage.roomId,
+        imageURL: recentMessage.imageURL,
+        targetUserId: targetUserId,
+        posterName: recentMessage.posterName);
+    if (data[recentMessage.roomId] == false) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
+        child: ListTile(
+          title: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              recentMessage.posterName,
+              style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          subtitle: Padding(
+            padding: EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 0.0),
+            child: Text('상대방이 퇴장하였습니다.'),
+          ),
+          leading: Image.network(
+            recentMessage.imageURL,
+            width: 50.0,
+            height: 50.0,
+            fit: BoxFit.fill,
+          ),
+          trailing: Column(
+            children: <Widget>[
+              Text(recentMessage.recentMessageTime),
+              Padding(
+                child: SizedBox(
+                    height: 30.0,
+                    child: BadgeIconButton(
+                        itemCount: int.parse(data[userId]),
+                        icon: Icon(
+                          Icons.transit_enterexit,
+                          color: Colors.transparent,
+                        ))),
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+              ),
+            ],
+          ),
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ChatRoomPage(
+                    chatRoomInfo: chatRoomInfo,
+                  ))),
+        ),
+      );
+    }
+
     return Padding(
       key: ValueKey(recentMessage.posterName),
       padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
@@ -127,7 +179,7 @@ class _ChatPageState extends State<ChatPage> {
               child: SizedBox(
                   height: 30.0,
                   child: BadgeIconButton(
-                      itemCount: _messageNum,
+                      itemCount: int.parse(data[userId]),
                       icon: Icon(
                         Icons.transit_enterexit,
                         color: Colors.transparent,
@@ -149,8 +201,10 @@ class _ChatPageState extends State<ChatPage> {
   void _getCurrentUserId(BuildContext context) {
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
       if (user != null) {
-        userId = user.uid;
-        userName = user.displayName;
+        setState(() {
+          userId = user.uid;
+          userName = user.displayName;
+        });
       }
     });
   }

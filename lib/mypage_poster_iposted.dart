@@ -98,16 +98,20 @@ class _MyPagePosterIPostedPageState extends State<MyPagePosterIPostedPage> {
   Widget _buildGridItem(BuildContext context, DocumentSnapshot data) {
     Poster poster = Poster.forPosterIPosted(data);
     return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           AspectRatio(
             aspectRatio: 12 / 11,
-            child: Image.network(
-              poster.imageURL,
-              width: 800.0,
-              height: 300.0,
-              fit: BoxFit.fill,
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(12.0), topRight: Radius.circular(12.0)),
+              child: Image.network(
+                poster.imageURL,
+                width: 800.0,
+                height: 300.0,
+                fit: BoxFit.fill,
+              ),
             ),
           ),
           Expanded(

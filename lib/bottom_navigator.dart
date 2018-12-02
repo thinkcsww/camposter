@@ -6,11 +6,17 @@ import 'calendar.dart';
 import 'home.dart';
 
 class NavigatorPage extends StatefulWidget {
+  String schoolName;
+  NavigatorPage({Key key, @required this.schoolName}) : super(key: key);
   @override
-  _NavigatorPageState createState() => _NavigatorPageState();
+  _NavigatorPageState createState() => _NavigatorPageState(schoolName: schoolName);
 }
 
 class _NavigatorPageState extends State<NavigatorPage> {
+
+  _NavigatorPageState({Key key, @required this.schoolName});
+
+  String schoolName;
   int currentTab = 0;
   ChatPage chatPage;
   LikePage likePage;
@@ -29,7 +35,7 @@ class _NavigatorPageState extends State<NavigatorPage> {
 
     chatPage = ChatPage();
     likePage = LikePage();
-    homePage = HomePage();
+    homePage = HomePage(schoolName: schoolName,);
     myPage = MyPage();
     calendarPage = CalendarPage();
 
@@ -51,13 +57,13 @@ class _NavigatorPageState extends State<NavigatorPage> {
           });
         },
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), title: Text("")),
+          BottomNavigationBarItem(icon: Icon(Icons.home), title: Text("홈", style: TextStyle(fontSize: 12.0))),
           BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today), title: Text("")),
-          BottomNavigationBarItem(icon: Icon(Icons.star), title: Text("")),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), title: Text("")),
+              icon: Icon(Icons.date_range), title: Text("캘린더", style: TextStyle(fontSize: 12.0))),
+          BottomNavigationBarItem(icon: Icon(Icons.grade), title: Text("좋아요", style: TextStyle(fontSize: 12.0))),
+          BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), title: Text("문의", style: TextStyle(fontSize: 12.0))),
           BottomNavigationBarItem(
-              icon: Icon(Icons.accessibility), title: Text("")),
+              icon: Icon(Icons.face), title: Text("내 정보", style: TextStyle(fontSize: 12.0))),
         ],
         type: BottomNavigationBarType.fixed,
       ),
