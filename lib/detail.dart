@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -87,7 +88,7 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
                         tag: poster.posterName,
                         child: Image.network(
                           poster.imageURL,
-                          height: 450.0,
+                          height: 475.0,
                           width: 800.0,
                           fit: BoxFit.fill,
                         ),
@@ -108,8 +109,24 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
                           SizedBox(
                             height: 8.0,
                           ),
-                          Text(
-                            poster.organizer,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center
+                            ,
+                            children: <Widget>[
+                              Text(
+                                poster.organizer,
+                              ),
+                              SizedBox(
+                                width: 10.0,
+                              ),
+
+                              InkWell(
+                                onTap: (){
+                                  chatAlertDialog(context);
+                                },
+                                child: Icon(Icons.message, size: 15.0, color: Colors.grey, ),
+                              ),
+                            ],
                           ),
                           Row(
                             children: <Widget>[
@@ -152,6 +169,7 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
                       }
                     });
                   } ),
+
                 ],
               )
             ],
@@ -159,5 +177,30 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
         ),
       ),
     );
+  }
+
+  void chatAlertDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text('알림'),
+            content: Text('문의하시겠습니까?'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text('예'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text('아니오'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
   }
 }

@@ -5,6 +5,7 @@ import 'package:camposter/edit_alarm_tag.dart';
 import 'package:camposter/model/poster.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'colors.dart';
@@ -326,7 +327,7 @@ class _MyPageState extends State<MyPage> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5.0),
-      width: 200.0,
+      width: 170.0,
       height: 220.0,
       child: Card(
         elevation: 2.0,
@@ -335,7 +336,7 @@ class _MyPageState extends State<MyPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             AspectRatio(
-              aspectRatio: 10 / 11,
+              aspectRatio: 10 / 13,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: Image.network(
@@ -388,7 +389,7 @@ class _MyPageState extends State<MyPage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20.0),
               child: Image.asset(
-                'images/logo',
+                'images/logo.png',
                 width: 800.0,
                 height: 300.0,
                 fit: BoxFit.fill,
@@ -399,4 +400,6 @@ class _MyPageState extends State<MyPage> {
       ),
     ),
   );
+
+
 }
