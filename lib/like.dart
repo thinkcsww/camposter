@@ -8,8 +8,7 @@ import 'detail.dart';
 
 class LikePage extends StatefulWidget {
   @override
-  _LikePageState createState() =>
-      _LikePageState();
+  _LikePageState createState() => _LikePageState();
 }
 
 class _LikePageState extends State<LikePage> {
@@ -31,7 +30,6 @@ class _LikePageState extends State<LikePage> {
 
   Widget _buildAppBar(BuildContext context) {
     return AppBar(
-
       elevation: 0.4,
       backgroundColor: Colors.white,
       title: Text(
@@ -64,12 +62,14 @@ class _LikePageState extends State<LikePage> {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
-
+          if (snapshot.data.documents.length == 0) return emptyLikeList;
           return _buildGridList(context, snapshot.data.documents);
         },
       ),
     );
   }
+
+
 
   Widget _buildGridList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return GridView.count(
@@ -81,21 +81,21 @@ class _LikePageState extends State<LikePage> {
   }
 
   Widget _buildGridItem(BuildContext context, DocumentSnapshot data) {
-
     Poster poster = Poster.forDetailPoster(data);
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PosterDetailPage(
-              poster: Poster.forDetailPoster(data),
-            ),
+                  poster: Poster.forDetailPoster(data),
+                ),
           ),
         );
       },
       child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -104,7 +104,9 @@ class _LikePageState extends State<LikePage> {
               child: Hero(
                 tag: poster.posterName,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(12.0), topRight: Radius.circular(12.0)),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12.0),
+                      topRight: Radius.circular(12.0)),
                   child: Image.network(
                     poster.imageURL,
                     width: 800.0,
@@ -148,22 +150,6 @@ class _LikePageState extends State<LikePage> {
     );
   }
 
-//  Widget _buildFooter(BuildContext context) {
-//    return Container(
-//      height: 75.0,
-//      child: Center(
-//        child: FlatButton(
-//            onPressed: () {},
-//            child: IconButton(
-//              icon: Icon(Icons.border_color),
-//              onPressed: () {
-//                showPickerDialog(context);
-//              },
-//              color: Theme.of(context).primaryColor,
-//            )),
-//      ),
-//    );
-//  }
 
   void _getCurrentUserId(BuildContext context) {
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
@@ -187,8 +173,36 @@ class _LikePageState extends State<LikePage> {
               fontWeight: FontWeight.bold),
         ),
         onConfirm: (Picker picker, List value) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddPosterPage(category: picker.getSelectedValues()[0])));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      AddPosterPage(category: picker.getSelectedValues()[0])));
           print(picker.getSelectedValues());
         }).showDialog(context);
   }
+
+  var emptyLikeList = Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.only(top: 120.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image.asset(
+              'images/posterdefault.png',
+              width: 200.0,
+              height: 200.0,
+              fit: BoxFit.fill,
+            ),
+          ],
+        ),
+      ),
+      SizedBox(
+        height: 10.0,
+      ),
+      Text('좋아요 된 포스터가 없습니다', style: TextStyle(color: Colors.grey),),
+    ],
+  );
 }

@@ -189,16 +189,15 @@ class _AddPosterPageState extends State<AddPosterPage> {
     }
   }
 
-  Future<String> _uploadFile(String uuid) async {
+  Future _uploadFile(String uuid) async {
     StorageReference storageReference = storage.ref();
     final StorageReference imagesRef = storageReference.child('posters/$uuid');
 
     StorageUploadTask uploadTask = imagesRef.putFile(_imageFile);
     print(imagesRef.getDownloadURL());
 
-    String imageURL = await (await uploadTask.onComplete).ref.getDownloadURL();
+    imageURL = await (await uploadTask.onComplete).ref.getDownloadURL();
 
-    return imageURL;
   }
 
   void _getCurrentUserId(BuildContext context) {
@@ -229,7 +228,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
         tagSplitResultMap[tagSplitResultList[i]] = tagSplitResultList[i];
       }
 
-      _uploadFile(uuid).then((f) {}).then((imageURL) {
+      _uploadFile(uuid).then((f) {}).then((done) {
         print('debug $imageURL');
         Firestore.instance.collection('Posters').document(uuid).setData({
           'posterName': name,

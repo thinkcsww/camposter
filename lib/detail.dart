@@ -1,11 +1,16 @@
 import 'dart:async';
 
+import 'package:camposter/chat_room.dart';
+import 'package:camposter/model/chat_room_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'colors.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class PosterDetailPage extends StatefulWidget {
   final poster;
@@ -47,6 +52,8 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
     _getCurrentUserId(context).then((FirebaseUser user) {
       getLiked(user.uid);
     });
+
+
   }
 
   Future<FirebaseUser> _getCurrentUserId(BuildContext context) async {
@@ -122,9 +129,18 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
 
                               InkWell(
                                 onTap: (){
-                                  chatAlertDialog(context);
+                                  final targetUserId = poster.creatorId;
+                                  final imageURL = poster.imageURL;
+                                  final posterName = poster.posterName;
+                                  final roomId = '$userId$targetUserId';
+                                  final chatRoomInfo = ChatRoomInfo(
+                                      roomId: roomId,
+                                      imageURL: imageURL,
+                                      targetUserId: targetUserId,
+                                      posterName: posterName);
+                                  chatAlertDialog(context, chatRoomInfo);
                                 },
-                                child: Icon(Icons.message, size: 15.0, color: Colors.grey, ),
+                                child: Icon(Icons.forum, size: 15.0, color: CamPosterRed200, ),
                               ),
                             ],
                           ),
@@ -144,7 +160,7 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  IconButton(icon: _isLiked? new Icon(Icons.star,color: CamPosterRed,): new Icon(Icons.star_border, color: CamPosterRed,), onPressed: (){
+                  IconButton(icon: _isLiked? new Icon(Icons.star,color: CamPosterRed200,): new Icon(Icons.star_border, color: CamPosterRed200,), onPressed: (){
                     Firestore.instance.collection('Users').document(userId).collection('liked_list').document(poster.posterId).get().then((value){
 
                       if(value.exists){
@@ -179,7 +195,7 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
     );
   }
 
-  void chatAlertDialog(BuildContext context) {
+  void chatAlertDialog(BuildContext context, ChatRoomInfo chatRoomInfo) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -190,7 +206,51 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
               CupertinoDialogAction(
                 child: Text('예'),
                 onPressed: () {
-                  Navigator.pop(context);
+                  var now = DateTime.now();
+                  initializeDateFormatting('ko_KR');
+                  var formatter = DateFormat('a h:mm', 'ko');
+                  var formattedTime = formatter.format(now);
+                  Firestore.instance
+                      .collection('Users')
+                      .document(userId)
+                      .collection('ChatList')
+                      .document(chatRoomInfo.roomId)
+                      .setData({
+                    chatRoomInfo.targetUserId: '0',
+                    userId: '0',
+                    'posterName': chatRoomInfo.posterName,
+                    'recentMessage': '새로운 대화가 생성되었습니다.',
+                    'recentMessageTime': formattedTime,
+                    'imageURL': chatRoomInfo.imageURL,
+                    'roomId': chatRoomInfo.roomId,
+                    chatRoomInfo.roomId: true
+                  }).then((finish) {
+                    Firestore.instance
+                        .collection('Users')
+                        .document(chatRoomInfo.targetUserId)
+                        .collection('ChatList')
+                        .document(chatRoomInfo.roomId)
+                        .setData({
+                      chatRoomInfo.targetUserId: '0',
+                      userId: '0',
+                      'posterName': chatRoomInfo.posterName,
+                      'recentMessage': '새로운 대화가 생성되었습니다.',
+                      'recentMessageTime': formattedTime,
+                      'imageURL': chatRoomInfo.imageURL,
+                      'roomId': chatRoomInfo.roomId,
+                      chatRoomInfo.roomId: true
+                    });
+
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ChatRoomPage(chatRoomInfo: chatRoomInfo)))
+                        .then((finish) {
+                      Fluttertoast.showToast(msg: '새로운 채팅 생성 완료');
+                      Navigator.pop(context);
+                    });
+                  });
                 },
               ),
               CupertinoDialogAction(

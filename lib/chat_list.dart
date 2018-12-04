@@ -5,6 +5,7 @@ import 'model/recent_message.dart';
 import 'chat_room.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'model/chat_room_info.dart';
+import 'colors.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -79,6 +80,8 @@ class _ChatPageState extends State<ChatPage> {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
+          if (snapshot.data.documents.length == 0)
+            return emptyListTile;
           return _buildList(context, snapshot.data.documents);
         },
       ),
@@ -143,8 +146,8 @@ class _ChatPageState extends State<ChatPage> {
               context,
               MaterialPageRoute(
                   builder: (context) => ChatRoomPage(
-                    chatRoomInfo: chatRoomInfo,
-                  ))),
+                        chatRoomInfo: chatRoomInfo,
+                      ))),
         ),
       );
     }
@@ -197,6 +200,48 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
+
+  var emptyListTile = Container(
+    decoration:
+    BoxDecoration(border: Border(top: BorderSide(width: 0.1))),
+    child: Padding(
+      padding:
+      const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
+      child: ListTile(
+        title: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text(
+            '진행중인 문의 채팅이 없습니다',
+            style: TextStyle(
+                color: CamPosterRed,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+        leading: Image.asset(
+          'images/logo.png',
+          width: 50.0,
+          height: 50.0,
+          fit: BoxFit.fill,
+        ),
+        trailing: Column(
+          children: <Widget>[
+            Text("00"),
+            Padding(
+              child: SizedBox(
+                  height: 30.0,
+                  child: BadgeIconButton(
+                      itemCount: 0,
+                      icon: Icon(
+                        Icons.transit_enterexit,
+                        color: Colors.transparent,
+                      ))),
+              padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 
   void _getCurrentUserId(BuildContext context) {
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
