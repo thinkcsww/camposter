@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:camposter/chat_room.dart';
 import 'package:camposter/model/chat_room_info.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'colors.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:photo_view/photo_view.dart';
 
 class PosterDetailPage extends StatefulWidget {
   final poster;
@@ -52,8 +52,6 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
     _getCurrentUserId(context).then((FirebaseUser user) {
       getLiked(user.uid);
     });
-
-
   }
 
   Future<FirebaseUser> _getCurrentUserId(BuildContext context) async {
@@ -72,123 +70,122 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
 
   Widget _buildBody(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         Navigator.pop(context);
       },
-      child: Padding(
-        padding: const EdgeInsets.only(top: 70.0, left: 20.0, right: 20.0, bottom: 30.0),
-        child: Card(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0)
-          ),
-          elevation: 5.0,
-          child: Stack(
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 0.0),
-                    child: new ClipRRect(
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
-                      child: Hero(
-                        tag: poster.posterName,
-                        child: Image.network(
-                          poster.imageURL,
-                          height: 475.0,
-                          width: 800.0,
-                          fit: BoxFit.fill,
+      child: PhotoView.customChild(
+        childSize: const Size(370.0, 550.0),
+        backgroundDecoration: BoxDecoration(color: CamPosterBackgroundWhite),
+        minScale: PhotoViewComputedScale.contained * 1.0,
+        maxScale: PhotoViewComputedScale.covered * 2.0,
+        initialScale: 1.0,
+        customSize: MediaQuery.of(context).size,
+        child: Padding(
+          padding: const EdgeInsets.only(
+              top: 10.0, left: 20.0, right: 20.0, bottom: 10.0),
+          child: Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            elevation: 5.0,
+            child: Stack(
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 0.0),
+                      child: new ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        child: Hero(
+                          tag: poster.posterName,
+                          child: Image.network(
+                            poster.imageURL,
+                            height: 520.0,
+                            width: 800.0,
+                            fit: BoxFit.fill,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            poster.posterName,
-                            style:
-                            TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
-                          ),
-                          SizedBox(
-                            height: 8.0,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center
-                            ,
-                            children: <Widget>[
-                              Text(
-                                poster.organizer,
-                              ),
-                              SizedBox(
-                                width: 10.0,
-                              ),
-
-                              InkWell(
-                                onTap: (){
-                                  final targetUserId = poster.creatorId;
-                                  final imageURL = poster.imageURL;
-                                  final posterName = poster.posterName;
-                                  final roomId = '$userId$targetUserId';
-                                  final chatRoomInfo = ChatRoomInfo(
-                                      roomId: roomId,
-                                      imageURL: imageURL,
-                                      targetUserId: targetUserId,
-                                      posterName: posterName);
-                                  chatAlertDialog(context, chatRoomInfo);
-                                },
-                                child: Icon(Icons.forum, size: 15.0, color: CamPosterRed200, ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: <Widget>[
-
-
-                            ],
-                          )
-                        ],
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: () {
+                        final targetUserId = poster.creatorId;
+                        final imageURL = poster.imageURL;
+                        final posterName = poster.posterName;
+                        final roomId = '$userId$targetUserId';
+                        final chatRoomInfo = ChatRoomInfo(
+                            roomId: roomId,
+                            imageURL: imageURL,
+                            targetUserId: targetUserId,
+                            posterName: posterName);
+                        chatAlertDialog(context, chatRoomInfo);
+                      },
+                      icon: _isLiked? Icon(
+                        Icons.chat_bubble,
+                        size: 20.0,
+                        color: CamPosterRed,
+                      ): Icon(
+                        Icons.chat_bubble_outline,
+                        size: 20.0,
+                        color: CamPosterRed,
                       ),
                     ),
-                  )
-
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  IconButton(icon: _isLiked? new Icon(Icons.star,color: CamPosterRed200,): new Icon(Icons.star_border, color: CamPosterRed200,), onPressed: (){
-                    Firestore.instance.collection('Users').document(userId).collection('liked_list').document(poster.posterId).get().then((value){
-
-                      if(value.exists){
-                        Firestore.instance.collection('Users').document(userId).collection('liked_list').document(poster.posterId).delete();
-                        setState(() {
-                          _isLiked = false;
-                        });
-
-                      }
-
-                      else if(!value.exists){
-                        Firestore.instance.collection('Users').document(userId).collection('liked_list').document(poster.posterId).setData({
-                          'posterName' : poster.posterName,
-                          'imageURL'   : poster.imageURL,
-                          'organizer'  : poster.organizer,
-                          'posterId'   : poster.posterId,
-                          'creatorId'  : poster.creatorId,
-                        });
-                        setState(() {
-                          _isLiked = true;
-                        });
-                      }
-                    });
-                  } ),
-
-                ],
-              )
-            ],
+                    IconButton(
+                        icon: _isLiked
+                            ? new Icon(
+                                Icons.star,
+                                color: CamPosterRed,
+                              )
+                            : new Icon(
+                                Icons.star_border,
+                                color: CamPosterRed,
+                              ),
+                        onPressed: () {
+                          Firestore.instance
+                              .collection('Users')
+                              .document(userId)
+                              .collection('liked_list')
+                              .document(poster.posterId)
+                              .get()
+                              .then((value) {
+                            if (value.exists) {
+                              Firestore.instance
+                                  .collection('Users')
+                                  .document(userId)
+                                  .collection('liked_list')
+                                  .document(poster.posterId)
+                                  .delete();
+                              setState(() {
+                                _isLiked = false;
+                              });
+                            } else if (!value.exists) {
+                              Firestore.instance
+                                  .collection('Users')
+                                  .document(userId)
+                                  .collection('liked_list')
+                                  .document(poster.posterId)
+                                  .setData({
+                                'posterName': poster.posterName,
+                                'imageURL': poster.imageURL,
+                                'organizer': poster.organizer,
+                                'posterId': poster.posterId,
+                                'creatorId': poster.creatorId,
+                              });
+                              setState(() {
+                                _isLiked = true;
+                              });
+                            }
+                          });
+                        }),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -242,10 +239,10 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
                     });
 
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ChatRoomPage(chatRoomInfo: chatRoomInfo)))
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ChatRoomPage(chatRoomInfo: chatRoomInfo)))
                         .then((finish) {
                       Fluttertoast.showToast(msg: '새로운 채팅 생성 완료');
                       Navigator.pop(context);

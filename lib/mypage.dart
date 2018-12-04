@@ -378,26 +378,39 @@ class _MyPageState extends State<MyPage> {
 
   Container emptyCard = Container(
     margin: const EdgeInsets.symmetric(horizontal: 5.0),
-    width: 200.0,
-    child: Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          AspectRatio(
-            aspectRatio: 10 / 11,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: Image.asset(
-                'images/logo.png',
-                width: 800.0,
-                height: 300.0,
-                fit: BoxFit.fill,
+    width: 330.0,
+    child: Stack(
+      children : <Widget>[
+        Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              AspectRatio(
+                aspectRatio: 15 / 10,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Image.asset(
+                    'images/posterdefault.png',
+                    width: 800.0,
+                    height: 300.0,
+                    fit: BoxFit.fill,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 180.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('게시된 포스터가 없습니다', style: TextStyle(color: CamPosterRed200, fontSize: 12.0), ),
+            ],
+          ),
+        )
+      ]
     ),
   );
 

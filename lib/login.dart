@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
       if (user != null) {
         setUserId(user).then((done) {
-          Navigator.popAndPushNamed(context, '/sign_up_info');
+          Navigator.pushNamedAndRemoveUntil(context, '/sign_up_info', (Route r) => false);
         });
       }
     });

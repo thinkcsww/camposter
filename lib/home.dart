@@ -9,6 +9,7 @@ import 'colors.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'detail.dart';
+import 'package:swipedetector/swipedetector.dart';
 
 class HomePage extends StatefulWidget {
   final schoolName;
@@ -188,48 +189,56 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildButtonRow(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20.0, 36.0, 36.0, 26.0),
-      child: Row(
-        children: <Widget>[
-          FlatButton(
-            child: Container(
-              padding: const EdgeInsets.only(bottom: 5.0),
-              decoration: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                          color: popularButtonBorderColor, width: 3.0))),
-              child: Text('인기있는',
-                  style: TextStyle(
-                      color: popularButtonColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0)),
-            ),
-            onPressed: () {
-              popularButtonClicked();
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: FlatButton(
+    return SwipeDetector(
+      onSwipeRight: () {
+        categoryButtonClicked();
+      },
+      onSwipeLeft: (){
+        popularButtonClicked();
+      },
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20.0, 36.0, 36.0, 26.0),
+        child: Row(
+          children: <Widget>[
+            FlatButton(
               child: Container(
                 padding: const EdgeInsets.only(bottom: 5.0),
                 decoration: BoxDecoration(
                     border: Border(
                         bottom: BorderSide(
-                            color: categoryButtonBorderColor, width: 3.0))),
-                child: Text('카테고리',
+                            color: popularButtonBorderColor, width: 3.0))),
+                child: Text('인기있는',
                     style: TextStyle(
-                        color: categoryButtonColor,
+                        color: popularButtonColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 18.0)),
               ),
               onPressed: () {
-                categoryButtonClicked();
+                popularButtonClicked();
               },
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: FlatButton(
+                child: Container(
+                  padding: const EdgeInsets.only(bottom: 5.0),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                              color: categoryButtonBorderColor, width: 3.0))),
+                  child: Text('카테고리',
+                      style: TextStyle(
+                          color: categoryButtonColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0)),
+                ),
+                onPressed: () {
+                  categoryButtonClicked();
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -557,6 +566,7 @@ class _HomePageState extends State<HomePage> {
       stream: Firestore.instance
           .collection('Posters')
           .where('auth', isEqualTo: true)
+          .where('school', isEqualTo: schoolName)
           .where('category', isEqualTo: queryPosterCategory)
           .snapshots(),
       builder: (context, snapshot) {

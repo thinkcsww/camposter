@@ -26,12 +26,10 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
     var schoolName = prefs.getString(SCHOOL_NAME);
     print('debug get: $schoolName');
     if (schoolName != null && schoolName != "") {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => NavigatorPage(
-                    schoolName: schoolName,
-                  )));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => NavigatorPage(
+            schoolName: schoolName,
+          )));
     }
   }
 
@@ -88,7 +86,8 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
                   margin: const EdgeInsets.only(bottom: 12.0),
                   decoration: BoxDecoration(
                       border: Border(
-                    left: BorderSide(color: Theme.of(context).primaryColor, width: 5.0),
+                    left: BorderSide(
+                        color: Theme.of(context).primaryColor, width: 5.0),
                     top: BorderSide(color: Theme.of(context).primaryColor),
                     right: BorderSide(color: Theme.of(context).primaryColor),
                     bottom: BorderSide(color: Theme.of(context).primaryColor),
@@ -166,14 +165,18 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
           .setData({'school': schoolName}).then((finish) {
         _hideSpinKit();
         Fluttertoast.showToast(msg: '완료되었습니다.');
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => NavigatorPage(
-                      schoolName: schoolName,
-                    ))).then((done) {
-                      Navigator.pop(context);
-        });
+//        Navigator.pushAndRemoveUntil(
+//            context,
+//            MaterialPageRoute(
+//                builder: (context) => NavigatorPage(
+//                      schoolName: schoolName,
+//                    )),
+//            (Route r) =>  false);
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => NavigatorPage(
+                schoolName: schoolName,
+              )));
+//        Navigator.popAndPushNamed(context, '/screen4');
       });
     } else {
       _hideSpinKit();
