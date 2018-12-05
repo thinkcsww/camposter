@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String schoolName;
-
+  
   _HomePageState({Key key, @required this.schoolName});
 
   final buttonActiveColor = CamPosterRed;
@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
       new GlobalKey();
   GlobalKey<AutoCompleteTextFieldState<String>> autoTextTagFieldKey =
       new GlobalKey();
+  
   bool categoryClicked = false;
   Color categoryButtonColor,
       categoryButtonBorderColor,
@@ -43,7 +44,9 @@ class _HomePageState extends State<HomePage> {
   int posterNumber = 0;
   String currentSearchMethod = "제목";
   String queryPosterName, queryPosterCategory, queryTagName;
+
   String userId = "", userName = "";
+  
   List<String> categoryList = ['공모전', '취업', '신앙', '동아리', '학회', '공연'];
   List<String> searchMethodList = ['제목', '태그'];
   List<Color> categoryListColor = [
@@ -81,7 +84,9 @@ class _HomePageState extends State<HomePage> {
     popularButtonBorderColor = buttonActiveColor;
     currentBody = _buildPopularBody(context);
 
+
     _getCurrentUserId(context).then((FirebaseUser user) {
+
       _getPosterListFromDB().then((done) {
         _getTagSuggestionsFromDB().then((done) {
           _hideSpinKit();
@@ -89,9 +94,9 @@ class _HomePageState extends State<HomePage> {
             currentAutoTextField = _buildTitleAutoCompleteTextField(context);
           });
         });
-      });
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +142,7 @@ class _HomePageState extends State<HomePage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: GestureDetector(
+
                         onTap: () {
                           _showPickerDialog(context);
                         },
@@ -242,6 +248,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
 
   Widget _buildPopularBody(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -562,6 +569,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildCategoryPosterListView(BuildContext context) {
+
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
           .collection('Posters')
@@ -1011,6 +1019,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+
   Future<FirebaseUser> _getCurrentUserId(BuildContext context) async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     return user;
@@ -1052,4 +1061,5 @@ class _HomePageState extends State<HomePage> {
       spinKitState = 0.0;
     });
   }
+
 }

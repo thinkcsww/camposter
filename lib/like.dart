@@ -8,7 +8,8 @@ import 'detail.dart';
 
 class LikePage extends StatefulWidget {
   @override
-  _LikePageState createState() => _LikePageState();
+  _LikePageState createState() =>
+      _LikePageState();
 }
 
 class _LikePageState extends State<LikePage> {
@@ -25,6 +26,7 @@ class _LikePageState extends State<LikePage> {
     return Scaffold(
       appBar: _buildAppBar(context),
       body: _buildBody(context),
+
     );
   }
 
@@ -63,13 +65,12 @@ class _LikePageState extends State<LikePage> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
           if (snapshot.data.documents.length == 0) return emptyLikeList;
+
           return _buildGridList(context, snapshot.data.documents);
         },
       ),
     );
   }
-
-
 
   Widget _buildGridList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return GridView.count(
@@ -81,21 +82,27 @@ class _LikePageState extends State<LikePage> {
   }
 
   Widget _buildGridItem(BuildContext context, DocumentSnapshot data) {
+
     Poster poster = Poster.forDetailPoster(data);
     return GestureDetector(
       onTap: () {
+
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PosterDetailPage(
+
                   poster: Poster.forDetailPoster(data),
                 ),
+
           ),
         );
       },
       child: Card(
+
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -107,6 +114,7 @@ class _LikePageState extends State<LikePage> {
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(12.0),
                       topRight: Radius.circular(12.0)),
+
                   child: Image.network(
                     poster.imageURL,
                     width: 800.0,
@@ -151,6 +159,7 @@ class _LikePageState extends State<LikePage> {
   }
 
 
+
   void _getCurrentUserId(BuildContext context) {
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
       if (user != null) {
@@ -173,6 +182,7 @@ class _LikePageState extends State<LikePage> {
               fontWeight: FontWeight.bold),
         ),
         onConfirm: (Picker picker, List value) {
+
           Navigator.push(
               context,
               MaterialPageRoute(

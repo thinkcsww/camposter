@@ -9,6 +9,7 @@ class SettingCenterPage extends StatefulWidget {
 class _SettingCenterPageState extends State<SettingCenterPage> {
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: _buildAppBar(context),
       body: _buildBody(context),

@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:photo_view/photo_view.dart';
 
+
 class PosterDetailPage extends StatefulWidget {
   final poster;
 
@@ -70,6 +71,7 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
 
   Widget _buildBody(BuildContext context) {
     return GestureDetector(
+
       onTap: () {
         Navigator.pop(context);
       },
@@ -186,6 +188,7 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
                 )
               ],
             ),
+
           ),
         ),
       ),

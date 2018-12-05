@@ -146,8 +146,10 @@ class _ChatPageState extends State<ChatPage> {
               context,
               MaterialPageRoute(
                   builder: (context) => ChatRoomPage(
+
                         chatRoomInfo: chatRoomInfo,
                       ))),
+
         ),
       );
     }

@@ -1,5 +1,5 @@
-import 'dart:async';
 
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +22,7 @@ class _SettingPersonPageState extends State<SettingPersonPage> {
   }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: _buildAppBar(context),
       body: _buildBody(context),

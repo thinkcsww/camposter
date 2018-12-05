@@ -26,10 +26,12 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
     var schoolName = prefs.getString(SCHOOL_NAME);
     print('debug get: $schoolName');
     if (schoolName != null && schoolName != "") {
+
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => NavigatorPage(
             schoolName: schoolName,
           )));
+
     }
   }
 
@@ -177,6 +179,7 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
                 schoolName: schoolName,
               )));
 //        Navigator.popAndPushNamed(context, '/screen4');
+
       });
     } else {
       _hideSpinKit();
