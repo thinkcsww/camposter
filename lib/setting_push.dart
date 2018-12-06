@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'colors.dart';
 
 class SettingPushPage extends StatefulWidget {
   @override

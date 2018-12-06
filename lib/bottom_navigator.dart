@@ -60,7 +60,7 @@ class _NavigatorPageState extends State<NavigatorPage> {
           BottomNavigationBarItem(icon: Icon(Icons.home), title: Text("홈", style: TextStyle(fontSize: 12.0))),
           BottomNavigationBarItem(
               icon: Icon(Icons.date_range), title: Text("캘린더", style: TextStyle(fontSize: 12.0))),
-          BottomNavigationBarItem(icon: Icon(Icons.grade), title: Text("좋아요", style: TextStyle(fontSize: 12.0))),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), title: Text("좋아요", style: TextStyle(fontSize: 12.0))),
           BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), title: Text("문의", style: TextStyle(fontSize: 12.0))),
           BottomNavigationBarItem(
               icon: Icon(Icons.face), title: Text("내 정보", style: TextStyle(fontSize: 12.0))),

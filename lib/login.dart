@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                           _showSpinKit();
                           _gSignIn().then((FirebaseUser user) {}).then((f) {
                             _hideSpinKit();
-                            Navigator.popAndPushNamed(context, '/sign_up_info');
+                            Navigator.pushNamedAndRemoveUntil(context, '/sign_up_info', (Route r) => false);
                           });
                         }
                     ),

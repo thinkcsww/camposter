@@ -59,16 +59,10 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
         ListView(
           padding: EdgeInsets.symmetric(horizontal: 48.0),
           children: <Widget>[
-            SizedBox(
-              height: 25.0,
-            ),
             Image.asset(
               'images/logo.png',
               width: 300.0,
               height: 250.0,
-            ),
-            SizedBox(
-              height: 25.0,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,19 +159,14 @@ class _SignUpInfoPageState extends State<SignUpInfoPage> {
           .setData({'school': schoolName}).then((finish) {
         _hideSpinKit();
         Fluttertoast.showToast(msg: '완료되었습니다.');
-//        Navigator.pushAndRemoveUntil(
-//            context,
-//            MaterialPageRoute(
-//                builder: (context) => NavigatorPage(
-//                      schoolName: schoolName,
-//                    )),
-//            (Route r) =>  false);
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => NavigatorPage(
-                schoolName: schoolName,
-              )));
-//        Navigator.popAndPushNamed(context, '/screen4');
+
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => NavigatorPage(
+              schoolName: schoolName,
+            )));
+
       });
+
     } else {
       _hideSpinKit();
       Fluttertoast.showToast(msg: '학교명을 입력해주세요.');

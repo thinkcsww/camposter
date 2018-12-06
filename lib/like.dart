@@ -5,6 +5,7 @@ import 'model/poster.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'add_poster.dart';
 import 'detail.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LikePage extends StatefulWidget {
   @override

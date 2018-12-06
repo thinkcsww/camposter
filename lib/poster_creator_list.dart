@@ -1,14 +1,12 @@
-import 'dart:async';
-
 import 'package:camposter/chat_room.dart';
 import 'package:camposter/model/chat_room_info.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'model/poster.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class PosterCreatorListPage extends StatefulWidget {
   @override
@@ -103,25 +101,82 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
                 imageURL: imageURL,
                 targetUserId: targetUserId,
                 posterName: posterName);
-            _showAlertDialog(context, chatRoomInfo)
-                .then((finish) => Navigator.pop(context));
+            chatAlertDialog(context, chatRoomInfo);
           },
         ),
       ),
     );
   }
 
-  Future<Null> _showAlertDialog(
-      BuildContext context, ChatRoomInfo chatRoomInfo) async {
-    return showDialog(
+//  Future<Null> _showAlertDialog(
+//      BuildContext context, ChatRoomInfo chatRoomInfo) async {
+//    return showDialog(
+//        context: context,
+//        barrierDismissible: false,
+//        builder: (BuildContext context) {
+//          return AlertDialog(
+//            contentPadding: const EdgeInsets.all(0.0),
+//            actions: <Widget>[
+//              FlatButton(
+//                child: Text('확인'),
+//                onPressed: () {
+//
+//                },
+//              ),
+//              FlatButton(
+//                child: Text('취소'),
+//                onPressed: () {
+//                  Navigator.pop(context);
+//                },
+//              )
+//            ],
+//            content: SingleChildScrollView(
+//              child: Column(
+//                children: <Widget>[
+//                  Row(
+//                    children: <Widget>[
+//                      Expanded(
+//                        child: Container(
+//                            alignment: Alignment.center,
+//                            height: 30.0,
+//                            decoration: BoxDecoration(
+//                                color: Theme.of(context).primaryColor),
+//                            child: Text(
+//                              '알림',
+//                              style: TextStyle(
+//                                  color: Colors.white,
+//                                  fontWeight: FontWeight.bold),
+//                            )),
+//                      ),
+//                    ],
+//                  ),
+//                  Row(
+//                    children: <Widget>[
+//                      Padding(
+//                        padding:
+//                            const EdgeInsets.fromLTRB(22.0, 25.0, 8.0, 8.0),
+//                        child:
+//                            Text('${chatRoomInfo.posterName}님과 채팅을 시작하겠습니까?'),
+//                      ),
+//                    ],
+//                  ),
+//                ],
+//              ),
+//            ),
+//          );
+//        });
+//  }
+
+  void chatAlertDialog(BuildContext context, ChatRoomInfo chatRoomInfo) {
+    showDialog(
         context: context,
-        barrierDismissible: false,
         builder: (BuildContext context) {
-          return AlertDialog(
-            contentPadding: const EdgeInsets.all(0.0),
+          return CupertinoAlertDialog(
+            title: Text('알림'),
+            content: Text('문의하시겠습니까?'),
             actions: <Widget>[
-              FlatButton(
-                child: Text('확인'),
+              CupertinoDialogAction(
+                child: Text('예'),
                 onPressed: () {
                   var now = DateTime.now();
                   initializeDateFormatting('ko_KR');
@@ -159,57 +214,23 @@ class _PosterCreatorListPageState extends State<PosterCreatorListPage> {
                     });
 
                     Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    ChatRoomPage(chatRoomInfo: chatRoomInfo)))
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ChatRoomPage(chatRoomInfo: chatRoomInfo)))
                         .then((finish) {
-                      Fluttertoast.showToast(msg: '새로운 채팅 생성 완료');
                       Navigator.pop(context);
                     });
                   });
                 },
               ),
-              FlatButton(
-                child: Text('취소'),
+              CupertinoDialogAction(
+                child: Text('아니오'),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               )
             ],
-            content: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                            alignment: Alignment.center,
-                            height: 30.0,
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor),
-                            child: Text(
-                              '알림',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            )),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(22.0, 25.0, 8.0, 8.0),
-                        child:
-                            Text('${chatRoomInfo.posterName}님과 채팅을 시작하겠습니까?'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
           );
         });
   }

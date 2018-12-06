@@ -41,6 +41,7 @@ class _MyPageState extends State<MyPage> {
     Firestore.instance.collection('Users').document(user.uid).collection(
         'AlarmTags').document('AlarmTags').get().then((
         DocumentSnapshot snapshot) {
+          if (!snapshot.exists) _hideSpinKit();
       setState(() {
         alarmTagList = snapshot.data.keys.toList();
       });
@@ -307,7 +308,9 @@ class _MyPageState extends State<MyPage> {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-        if (snapshot.data.documents.length == 0) return emptyCard;
+        if (snapshot.data.documents.length == 0) {
+          return emptyCard;
+        }
 
         return _buildMyPosterList(context, snapshot.data.documents);
       },
@@ -406,7 +409,7 @@ class _MyPageState extends State<MyPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text('게시된 포스터가 없습니다', style: TextStyle(color: CamPosterRed200, fontSize: 12.0), ),
+              Text('게시된 포스터가 없습니다', style: TextStyle( fontSize: 12.0), ),
             ],
           ),
         )

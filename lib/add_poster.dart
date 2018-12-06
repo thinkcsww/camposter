@@ -197,7 +197,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
     print(imagesRef.getDownloadURL());
 
     imageURL = await (await uploadTask.onComplete).ref.getDownloadURL();
-
+    print(imageURL);
   }
 
   void _getCurrentUserId(BuildContext context) {

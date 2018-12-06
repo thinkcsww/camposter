@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:camposter/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingPersonPage extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class SettingPersonPage extends StatefulWidget {
 
 class _SettingPersonPageState extends State<SettingPersonPage> {
   String userEmail = "";
-
+  SharedPreferences prefs;
 
   @override
   void initState() {
@@ -126,11 +127,11 @@ class _SettingPersonPageState extends State<SettingPersonPage> {
               CupertinoDialogAction(
                 child: Text('예'),
                 onPressed: () {
+                  setSchoolName();
                   _signOut().then((done) {
                     GoogleSignIn _googleSignIn = GoogleSignIn();
                     _googleSignIn.signOut().then((done) {
-                      Navigator.pop(context);
-                      Navigator.popAndPushNamed(context, '/login');
+                      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route r) => false);
                     });
                   });
                 },
@@ -144,6 +145,11 @@ class _SettingPersonPageState extends State<SettingPersonPage> {
             ],
           );
         });
+  }
+
+  void setSchoolName() async {
+    prefs = await SharedPreferences.getInstance();
+    prefs.setString(SCHOOL_NAME, "");
   }
 
   Future _signOut()  async{
