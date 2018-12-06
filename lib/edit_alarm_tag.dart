@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:camposter/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

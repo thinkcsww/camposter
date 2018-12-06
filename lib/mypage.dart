@@ -1,11 +1,14 @@
-import 'dart:async';
 
+import 'dart:async';
 import 'package:camposter/constants.dart';
 import 'package:camposter/edit_alarm_tag.dart';
 import 'package:camposter/model/poster.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/cupertino.dart';
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'colors.dart';
@@ -72,6 +75,7 @@ class _MyPageState extends State<MyPage> {
       leading: Container(
 
       ),
+
 
       title: Text(
         "마이 페이지",
@@ -330,6 +334,7 @@ class _MyPageState extends State<MyPage> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5.0),
+
       width: 170.0,
       height: 220.0,
       child: Card(
@@ -340,6 +345,7 @@ class _MyPageState extends State<MyPage> {
           children: <Widget>[
             AspectRatio(
               aspectRatio: 10 / 13,
+
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: Image.network(
@@ -381,6 +387,7 @@ class _MyPageState extends State<MyPage> {
 
   Container emptyCard = Container(
     margin: const EdgeInsets.symmetric(horizontal: 5.0),
+
     width: 330.0,
     child: Stack(
       children : <Widget>[
@@ -416,6 +423,5 @@ class _MyPageState extends State<MyPage> {
       ]
     ),
   );
-
 
 }

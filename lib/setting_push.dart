@@ -34,6 +34,7 @@ class _SettingPushPageState extends State<SettingPushPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: _buildAppBar(context),
       body: _buildBody(context),

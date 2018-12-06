@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:camposter/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -47,7 +46,9 @@ class _LoginPageState extends State<LoginPage> {
     FirebaseAuth.instance.onAuthStateChanged.listen((user) {
       if (user != null) {
         setUserId(user).then((done) {
+
           Navigator.pushNamedAndRemoveUntil(context, '/sign_up_info', (Route r) => false);
+
         });
       }
     });
@@ -81,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               child: Column(
                 children: <Widget>[
+
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 10.0),
                     child: FlatButton(
@@ -96,6 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                           });
                         }
                     ),
+
                   ),
                   Opacity(
                     opacity: spinKitState,

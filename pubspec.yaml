@@ -34,7 +34,9 @@ dependencies:
     git: git://github.com/yangyxd/flutter_picker.git
   flutter_calendar: ^0.0.1
   photo_view: ^0.1.0
+
   swipedetector: ^1.2.0
+
 
 
 dev_dependencies:
