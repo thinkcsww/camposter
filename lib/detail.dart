@@ -118,92 +118,95 @@ class _PosterDetailPageState extends State<PosterDetailPage> {
             ),
           ),
         ),
-        Container(
-          width: 225.0,
-          margin: const EdgeInsets.only(bottom: 20.0),
-          decoration: BoxDecoration(
-            color: CamPosterBackgroundWhite,
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Card(
-            elevation: 7.0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    final targetUserId = poster.creatorId;
-                    final imageURL = poster.imageURL;
-                    final posterName = poster.posterName;
-                    final roomId = '$userId$targetUserId';
-                    final chatRoomInfo = ChatRoomInfo(
-                        roomId: roomId,
-                        imageURL: imageURL,
-                        targetUserId: targetUserId,
-                        posterName: posterName);
-                    chatAlertDialog(context, chatRoomInfo);
-                  },
-                  icon: Icon(
-                          Icons.email,
-                          size: 28.0,
-                          color: CamPosterRed,
-                        )
-                ),
-                SizedBox(
-                  width: 30.0,
-                ),
-                IconButton(
-                    icon: _isLiked
-                        ? new Icon(
-                            Icons.favorite,
-                      size: 30.0,
+        Opacity(
+          opacity: 0.8,
+          child: Container(
+            width: 225.0,
+            margin: const EdgeInsets.only(bottom: 20.0),
+            decoration: BoxDecoration(
+              color: CamPosterBackgroundWhite,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Card(
+              elevation: 7.0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  IconButton(
+                    onPressed: () {
+                      final targetUserId = poster.creatorId;
+                      final imageURL = poster.imageURL;
+                      final posterName = poster.posterName;
+                      final roomId = '$userId$targetUserId';
+                      final chatRoomInfo = ChatRoomInfo(
+                          roomId: roomId,
+                          imageURL: imageURL,
+                          targetUserId: targetUserId,
+                          posterName: posterName);
+                      chatAlertDialog(context, chatRoomInfo);
+                    },
+                    icon: Icon(
+                            Icons.email,
+                            size: 28.0,
                             color: CamPosterRed,
                           )
-                        : new Icon(
-                            Icons.favorite_border,
-                      size: 30.0,
-                            color: CamPosterRed,
-                          ),
-                    onPressed: () {
-                      Firestore.instance
-                          .collection('Users')
-                          .document(userId)
-                          .collection('liked_list')
-                          .document(poster.posterId)
-                          .get()
-                          .then((value) {
-                        if (value.exists) {
-                          Firestore.instance
-                              .collection('Users')
-                              .document(userId)
-                              .collection('liked_list')
-                              .document(poster.posterId)
-                              .delete();
-                          setState(() {
-                            _isLiked = false;
-                          });
-                          Fluttertoast.showToast(msg: '제거되었습니다');
-                        } else if (!value.exists) {
-                          Firestore.instance
-                              .collection('Users')
-                              .document(userId)
-                              .collection('liked_list')
-                              .document(poster.posterId)
-                              .setData({
-                            'posterName': poster.posterName,
-                            'imageURL': poster.imageURL,
-                            'organizer': poster.organizer,
-                            'posterId': poster.posterId,
-                            'creatorId': poster.creatorId,
-                          });
-                          Fluttertoast.showToast(msg: '즐겨찾기에 추가되었습니다');
-                          setState(() {
-                            _isLiked = true;
-                          });
-                        }
-                      });
-                    }),
-              ],
+                  ),
+                  SizedBox(
+                    width: 30.0,
+                  ),
+                  IconButton(
+                      icon: _isLiked
+                          ? new Icon(
+                              Icons.favorite,
+                        size: 30.0,
+                              color: CamPosterRed,
+                            )
+                          : new Icon(
+                              Icons.favorite_border,
+                        size: 30.0,
+                              color: CamPosterRed,
+                            ),
+                      onPressed: () {
+                        Firestore.instance
+                            .collection('Users')
+                            .document(userId)
+                            .collection('liked_list')
+                            .document(poster.posterId)
+                            .get()
+                            .then((value) {
+                          if (value.exists) {
+                            Firestore.instance
+                                .collection('Users')
+                                .document(userId)
+                                .collection('liked_list')
+                                .document(poster.posterId)
+                                .delete();
+                            setState(() {
+                              _isLiked = false;
+                            });
+                            Fluttertoast.showToast(msg: '제거되었습니다');
+                          } else if (!value.exists) {
+                            Firestore.instance
+                                .collection('Users')
+                                .document(userId)
+                                .collection('liked_list')
+                                .document(poster.posterId)
+                                .setData({
+                              'posterName': poster.posterName,
+                              'imageURL': poster.imageURL,
+                              'organizer': poster.organizer,
+                              'posterId': poster.posterId,
+                              'creatorId': poster.creatorId,
+                            });
+                            Fluttertoast.showToast(msg: '즐겨찾기에 추가되었습니다');
+                            setState(() {
+                              _isLiked = true;
+                            });
+                          }
+                        });
+                      }),
+                ],
+              ),
             ),
           ),
         )

@@ -386,7 +386,7 @@ class _MyPageState extends State<MyPage> {
   }
 
   Container emptyCard = Container(
-    margin: const EdgeInsets.symmetric(horizontal: 5.0),
+    margin: const EdgeInsets.only(top: 15.0, left: 20.0),
 
     width: 330.0,
     child: Stack(
@@ -394,7 +394,7 @@ class _MyPageState extends State<MyPage> {
         Card(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               AspectRatio(
                 aspectRatio: 15 / 10,
