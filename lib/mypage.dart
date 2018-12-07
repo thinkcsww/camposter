@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:camposter/constants.dart';
 import 'package:camposter/edit_alarm_tag.dart';
@@ -7,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/cupertino.dart';
-
 
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -41,9 +39,13 @@ class _MyPageState extends State<MyPage> {
   }
 
   void _getAlarmTagsFromDB(FirebaseUser user) {
-    Firestore.instance.collection('Users').document(user.uid).collection(
-        'AlarmTags').document('AlarmTags').get().then((
-        DocumentSnapshot snapshot) {
+    Firestore.instance
+        .collection('Users')
+        .document(user.uid)
+        .collection('AlarmTags')
+        .document('AlarmTags')
+        .get()
+        .then((DocumentSnapshot snapshot) {
       setState(() {
         alarmTagList = snapshot.data.keys.toList();
       });
@@ -71,11 +73,7 @@ class _MyPageState extends State<MyPage> {
     return AppBar(
       elevation: 0.0,
       backgroundColor: CamPosterRed,
-      leading: Container(
-
-      ),
-
-
+      leading: Container(),
       title: Text(
         "마이 페이지",
         style: TextStyle(
@@ -106,14 +104,15 @@ class _MyPageState extends State<MyPage> {
                 Flexible(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: _buildMyPosterListView(context),
+                    child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 1000),
+                        child: _buildMyPosterListView(context)),
                   ),
                 ),
               ],
             ),
           )
         ]),
-
         Opacity(
           opacity: spinKitState,
           child: SpinKitCircle(
@@ -226,8 +225,7 @@ class _MyPageState extends State<MyPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                EditAlarmTagPage(
+                            builder: (context) => EditAlarmTagPage(
                                   alarmTagList: alarmTagList,
                                 )));
                   },
@@ -242,9 +240,7 @@ class _MyPageState extends State<MyPage> {
             ),
           ),
           Divider(
-            color: Theme
-                .of(context)
-                .primaryColor,
+            color: Theme.of(context).primaryColor,
           ),
           Padding(
             padding: EdgeInsets.only(top: 10.0, left: 10.0, bottom: 10.0),
@@ -275,8 +271,8 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
-  List<Padding> _buildAlarmTagChips(BuildContext context,
-      List<String> tagList) {
+  List<Padding> _buildAlarmTagChips(
+      BuildContext context, List<String> tagList) {
     List<Padding> tagChips = [];
 
     for (var i = 0; i < tagList.length; i++) {
@@ -308,21 +304,25 @@ class _MyPageState extends State<MyPage> {
           .collection('Users')
           .document(userId)
           .collection('MyPosters')
+          .limit(4)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
         if (snapshot.data.documents.length == 0) return emptyCard;
 
-        return _buildMyPosterList(context, snapshot.data.documents);
+        return ConstrainedBox(
+            constraints:
+                BoxConstraints(maxWidth: 180.0 * snapshot.data.documents.length),
+            child: _buildMyPosterList(context, snapshot.data.documents));
       },
     );
   }
 
-  Widget _buildMyPosterList(BuildContext context,
-      List<DocumentSnapshot> snapshot) {
+  Widget _buildMyPosterList(
+      BuildContext context, List<DocumentSnapshot> snapshot) {
     return Row(
       children:
-      snapshot.map((data) => _buildMyPosterItem(context, data)).toList(),
+          snapshot.map((data) => _buildMyPosterItem(context, data)).toList(),
     );
   }
 
@@ -331,18 +331,17 @@ class _MyPageState extends State<MyPage> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5.0),
-
       width: 170.0,
       height: 220.0,
       child: Card(
         elevation: 2.0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             AspectRatio(
               aspectRatio: 10 / 13,
-
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: Image.network(
@@ -369,7 +368,6 @@ class _MyPageState extends State<MyPage> {
     return user;
   }
 
-
   void _showSpinKit() {
     setState(() {
       spinKitState = 1.0;
@@ -383,42 +381,42 @@ class _MyPageState extends State<MyPage> {
   }
 
   Container emptyCard = Container(
-    margin: const EdgeInsets.symmetric(horizontal: 5.0),
-
+    margin: const EdgeInsets.symmetric(horizontal: 20.0),
     width: 330.0,
-    child: Stack(
-      children : <Widget>[
-        Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              AspectRatio(
-                aspectRatio: 15 / 10,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20.0),
-                  child: Image.asset(
-                    'images/posterdefault.png',
-                    width: 800.0,
-                    height: 300.0,
-                    fit: BoxFit.fill,
-                  ),
+    child: Stack(children: <Widget>[
+      Card(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            AspectRatio(
+              aspectRatio: 15 / 10,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20.0),
+                child: Image.asset(
+                  'images/posterdefault.png',
+                  width: 800.0,
+                  height: 300.0,
+                  fit: BoxFit.fill,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 180.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text('게시된 포스터가 없습니다', style: TextStyle(color: CamPosterRed200, fontSize: 12.0), ),
-            ],
-          ),
-        )
-      ]
-    ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(top: 180.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              '게시된 포스터가 없습니다',
+              style: TextStyle(fontSize: 12.0),
+            ),
+          ],
+        ),
+      )
+    ]),
   );
-
 }

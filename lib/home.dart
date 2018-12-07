@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String schoolName;
-  
+
   _HomePageState({Key key, @required this.schoolName});
 
   final buttonActiveColor = CamPosterRed;
@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
       new GlobalKey();
   GlobalKey<AutoCompleteTextFieldState<String>> autoTextTagFieldKey =
       new GlobalKey();
-  
+
   bool categoryClicked = false;
   Color categoryButtonColor,
       categoryButtonBorderColor,
@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
   String queryPosterName, queryPosterCategory, queryTagName;
 
   String userId = "", userName = "";
-  
+
   List<String> categoryList = ['공모전', '취업', '신앙', '동아리', '학회', '공연'];
   List<String> searchMethodList = ['제목', '태그'];
   List<Color> categoryListColor = [
@@ -84,9 +84,7 @@ class _HomePageState extends State<HomePage> {
     popularButtonBorderColor = buttonActiveColor;
     currentBody = _buildPopularBody(context);
 
-
     _getCurrentUserId(context).then((FirebaseUser user) {
-
       _getPosterListFromDB().then((done) {
         _getTagSuggestionsFromDB().then((done) {
           _hideSpinKit();
@@ -94,11 +92,9 @@ class _HomePageState extends State<HomePage> {
             currentAutoTextField = _buildTitleAutoCompleteTextField(context);
           });
         });
+      });
     });
-  });
-
-        }
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +140,6 @@ class _HomePageState extends State<HomePage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: GestureDetector(
-
                         onTap: () {
                           _showPickerDialog(context);
                         },
@@ -201,7 +196,7 @@ class _HomePageState extends State<HomePage> {
       onSwipeRight: () {
         categoryButtonClicked();
       },
-      onSwipeLeft: (){
+      onSwipeLeft: () {
         popularButtonClicked();
       },
       child: Padding(
@@ -251,7 +246,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
   Widget _buildPopularBody(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _listViewScrollController.jumpTo(0.0);
@@ -265,11 +259,11 @@ class _HomePageState extends State<HomePage> {
               child: SingleChildScrollView(
                 controller: _listViewScrollController,
                 scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: <Widget>[
-                    _buildPopularPosterListView(context),
-                  ],
-                ),
+                child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: 10000.0,
+                    ),
+                    child: _buildPopularPosterListView(context)),
               ),
             )
           ],
@@ -359,7 +353,10 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.data.documents.length == 0) return emptyPopularCard;
           posterNumber = snapshot.data.documents.length;
           print(posterNumber);
-          return _buildPopularList(context, snapshot.data.documents);
+          return ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxWidth: (snapshot.data.documents.length * 280) + 165.0),
+              child: _buildPopularList(context, snapshot.data.documents));
         },
       );
     } else {
@@ -376,7 +373,10 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.data.documents.length == 0) return emptyPopularCard;
           posterNumber = snapshot.data.documents.length;
           print(posterNumber);
-          return _buildPopularList(context, snapshot.data.documents);
+          return ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxWidth: (snapshot.data.documents.length * 280) + 165.0),
+              child: _buildPopularList(context, snapshot.data.documents));
         },
       );
     }
@@ -488,7 +488,9 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: <Widget>[
                     _buildCategoryHomeLeftView(context),
-                    _buildCategoryPosterListView(context),
+                    ConstrainedBox(constraints: BoxConstraints(
+                      maxWidth: 10000.0
+                    ),child: _buildCategoryPosterListView(context)),
                   ],
                 ),
               ),
@@ -571,7 +573,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildCategoryPosterListView(BuildContext context) {
-
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
           .collection('Posters')
@@ -583,7 +584,10 @@ class _HomePageState extends State<HomePage> {
         if (snapshot.hasError) return Text('Error, please try again');
         if (!snapshot.hasData) return LinearProgressIndicator();
         if (snapshot.data.documents.length == 0) return emptyCard;
-        return _buildCategoryList(context, snapshot.data.documents);
+        return ConstrainedBox(
+            constraints: BoxConstraints(
+                maxWidth: (snapshot.data.documents.length * 280) + 165.0),
+            child: _buildCategoryList(context, snapshot.data.documents));
       },
     );
   }
@@ -1021,7 +1025,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-
   Future<FirebaseUser> _getCurrentUserId(BuildContext context) async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     return user;
@@ -1063,5 +1066,4 @@ class _HomePageState extends State<HomePage> {
       spinKitState = 0.0;
     });
   }
-
 }
