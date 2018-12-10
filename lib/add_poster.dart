@@ -194,8 +194,6 @@ class _AddPosterPageState extends State<AddPosterPage> {
     final StorageReference imagesRef = storageReference.child('posters/$uuid');
 
     StorageUploadTask uploadTask = imagesRef.putFile(_imageFile);
-    print(imagesRef.getDownloadURL());
-
     imageURL = await (await uploadTask.onComplete).ref.getDownloadURL();
     print(imageURL);
   }
@@ -228,7 +226,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
         tagSplitResultMap[tagSplitResultList[i]] = tagSplitResultList[i];
       }
 
-      _uploadFile(uuid).then((f) {}).then((done) {
+      _uploadFile(uuid).then((done) {
         print('debug $imageURL');
         Firestore.instance.collection('Posters').document(uuid).setData({
           'posterName': name,

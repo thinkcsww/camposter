@@ -234,7 +234,7 @@ class _MyPageState extends State<MyPage> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 0.0, left: 10.0, bottom: 0.0),
+            padding: EdgeInsets.only(top: 0.0, left: 10.0),
             child: Row(
               children: _buildAlarmTagChips(context, alarmTagList),
             ),
@@ -243,7 +243,7 @@ class _MyPageState extends State<MyPage> {
             color: Theme.of(context).primaryColor,
           ),
           Padding(
-            padding: EdgeInsets.only(top: 10.0, left: 10.0, bottom: 10.0),
+            padding: EdgeInsets.only(top: 5.0, left: 10.0, bottom: 5.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[

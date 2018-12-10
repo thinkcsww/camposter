@@ -20,7 +20,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		ADFB380CF27F7911305F479F /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5134DD1CA6FBC6AB4B8B98D /* Pods_Runner.framework */; };
-		FEB273A12164DBFC00164560 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FEB273A02164DBFC00164560 /* GoogleService-Info.plist */; };
+		FE679E6321BE397100039405 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FE679E6221BE397100039405 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -56,7 +56,7 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F5134DD1CA6FBC6AB4B8B98D /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FEB273A02164DBFC00164560 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		FE679E6221BE397100039405 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,8 +111,8 @@
 			children = (
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
+				FE679E6221BE397100039405 /* GoogleService-Info.plist */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
-				FEB273A02164DBFC00164560 /* GoogleService-Info.plist */,
 				97C147021CF9000F007C117D /* Info.plist */,
 				97C146F11CF9000F007C117D /* Supporting Files */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
@@ -212,11 +212,11 @@
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
+				FE679E6321BE397100039405 /* GoogleService-Info.plist in Resources */,
 				9740EEB41CF90195004384FC /* Debug.xcconfig in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				2D5378261FAA1A9400D5DBA9 /* flutter_assets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
-				FEB273A12164DBFC00164560 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,6 +500,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -529,6 +530,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
