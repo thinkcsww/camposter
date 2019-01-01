@@ -189,13 +189,26 @@ class _AddPosterPageState extends State<AddPosterPage> {
     }
   }
 
-  Future _uploadFile(String uuid) async {
-    StorageReference storageReference = storage.ref();
-    final StorageReference imagesRef = storageReference.child('posters/$uuid');
+  Future<String> _uploadFile(File file, String uuid) async {
+    String imageUrl = "";
+    final StorageReference imagesRef =
+        FirebaseStorage.instance.ref().child('posters/$uuid');
 
-    StorageUploadTask uploadTask = imagesRef.putFile(_imageFile);
-    imageURL = await (await uploadTask.onComplete).ref.getDownloadURL();
-    print(imageURL);
+    StorageUploadTask uploadTask = imagesRef.putFile(
+        _imageFile,
+        StorageMetadata(
+          contentLanguage: 'en',
+        ));
+    print('hi');
+    await (await uploadTask.onComplete)
+        .ref
+        .getDownloadURL()
+        .then((dynamic url) {
+      imageUrl = url;
+      print(imageUrl);
+    });
+
+    return imageUrl;
   }
 
   void _getCurrentUserId(BuildContext context) {
@@ -226,7 +239,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
         tagSplitResultMap[tagSplitResultList[i]] = tagSplitResultList[i];
       }
 
-      _uploadFile(uuid).then((done) {
+      _uploadFile(_imageFile, uuid).then((imageURL) {
         print('debug $imageURL');
         Firestore.instance.collection('Posters').document(uuid).setData({
           'posterName': name,
@@ -239,7 +252,7 @@ class _AddPosterPageState extends State<AddPosterPage> {
           'imagePath': 'images/$uuid',
           'category': category,
           'auth': false,
-          'tags' : tagSplitResultList
+          'tags': tagSplitResultList
         }).then((f) {
           Firestore.instance
               .collection('Users')
@@ -253,9 +266,10 @@ class _AddPosterPageState extends State<AddPosterPage> {
             'imagePath': 'images/$uuid',
             'category': category,
           }).then((done) {
-
-            Firestore.instance.collection('Tags').document('Tags').setData(tagSplitResultMap, merge: true
-            );
+            Firestore.instance
+                .collection('Tags')
+                .document('Tags')
+                .setData(tagSplitResultMap, merge: true);
           }).then((f) {
             _hideSpinKit();
             Fluttertoast.showToast(msg: '업로드 완료');
